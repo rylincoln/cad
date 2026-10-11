@@ -295,3 +295,27 @@ There are no letter centers to glue back.
 **The practice window** moves 0.7" right, to x = −7.3 … 5.2 (same 12.5 × 7.5"), so it holds the
 whole script word, which can't be split at a letter. It loses the M of "Mary" and the oval's left
 tip.
+
+## Revision 5 (hairline necks)
+
+The user spotted a hairline "tie" at the top of the script g, then the same thing in the small E's.
+In each, a stroke curls back almost onto itself: the g's ball end to its downstroke, an E's arm to
+the next arm's serif. The plate between them was the only thing holding the copper inside, and
+here it was 0.01–0.05" wide. The rules only measured copper *between* separate cuts, so they missed
+it.
+- **Rule 6.** Shrinking the plate's copper by half the 0.06" copper rule must leave each piece of
+  copper whole.
+- **The fix.** Each letter is checked the same way before tying. Any copper that splits off is
+  joined back to the plate with a square-ended 0.08" strip, which trims the strokes on either side.
+- **Where the strip goes.** It runs straight across the neck if it can. Otherwise it goes straight
+  along the thin plate, or bends once through the middle of a curved channel (the script a).
+
+Places fixed:
+- the E's in Theresa, James, Feb and December;
+- the script g and a;
+- the r in Apr;
+- the 3's top hook;
+- the 2, 5 and 9.
+
+Openings that already clear 0.06" are left as drawn. A second pass that opened every neck to 0.08"
+was tried and dropped: it bit into an S whose mouth was already 0.077".

@@ -81,3 +81,16 @@ def test_a_letter_centre_is_reported_when_drop_outs_are_not_allowed():
     assert check_plate(_plate([letter]), full_text=True) == []
     problems = check_plate(_plate([letter]), full_text=True, drop_outs=False)
     assert len(problems) == 1 and "drop out" in problems[0]
+
+
+def _c_shape(opening):
+    # a 0.5" square letter whose centre opens to the right through a slot `opening` wide
+    ring = box(0, 0, 0.5, 0.5).difference(box(0.15, 0.15, 0.35, 0.35))
+    return ring.difference(box(0.3, 0.25 - opening / 2, 0.6, 0.25 + opening / 2))
+
+
+def test_a_neck_of_copper_too_thin_to_keep_is_reported():
+    # the copper inside the C hangs from the plate by its opening: 0.02" is a hairline tie
+    problems = check_plate(_plate([_c_shape(0.02)]), full_text=True)
+    assert len(problems) == 1 and "copper narrower than" in problems[0]
+    assert check_plate(_plate([_c_shape(0.1)]), full_text=True) == []

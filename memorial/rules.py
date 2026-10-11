@@ -74,4 +74,13 @@ def check_plate(plate: Plate, *, full_text: bool, drop_outs: bool = True) -> lis
         off = min(Point(h).distance(b) for b in plate.border) if plate.border else float("inf")
         if off > 1e-3:
             problems.append(f"pin hole {i + 1} is {off:.3f}\" off the border line")
+
+    # 6. the plate itself: shrunk by half the copper rule, every piece of copper must stay whole, so
+    #    no neck of plate holding a letter's inside (or a tie) is too thin to keep
+    copper = plate.outline.difference(unary_union([region for _, region in shapes]))
+    for piece in getattr(copper, "geoms", [copper]):
+        core = piece.buffer(-(spec.MIN_COPPER - TOLERANCE) / 2)
+        if _count(core) > 1:
+            cut_off = min(core.geoms, key=lambda g: g.area)
+            problems.append(f"copper narrower than {spec.MIN_COPPER}\" holds the plate near {_where(cut_off)}")
     return problems

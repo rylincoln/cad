@@ -3,7 +3,7 @@ from shapely.ops import unary_union
 
 from memorial import spec
 from memorial.rules import check_plate
-from memorial.ties import with_ties
+from memorial.ties import tie_region, with_ties
 
 
 @pytest.fixture(scope="module")
@@ -25,18 +25,13 @@ def test_the_tied_plate_passes_every_rule_with_no_drop_outs(tied):
 
 
 def test_bowl_letters_get_two_ties_and_the_rest_one(untied, tied):
-    # two ties split a D or 0 into two pieces; one tie leaves a letter in one piece
+    # two ties split a D or 0 into two pieces; one tie, or a widened neck, leaves a letter in one piece
     for key in untied.lines:
         if key == "surname":
             continue
         for (char, before), (_, after) in zip(_glyphs(untied, key), _glyphs(tied, key)):
             pieces = len(getattr(after, "geoms", [after]))
-            if not before.interiors:
-                assert after.equals(before), char
-            elif char in spec.TWO_TIE_CHARS:
-                assert pieces == 2, char
-            else:
-                assert pieces == 1, char
+            assert pieces == (2 if before.interiors and char in spec.TWO_TIE_CHARS else 1), char
 
 
 def test_each_tie_is_one_tie_width_of_plate(tied):
@@ -46,12 +41,13 @@ def test_each_tie_is_one_tie_width_of_plate(tied):
 
 
 def test_ties_take_only_a_narrow_strip_of_each_letter(untied, tied):
+    # each tie, and each neck widened into one (at most two per letter, in an E), costs a strip of stroke
     for key in untied.lines:
         for (char, before), (_, after) in zip(_glyphs(untied, key), _glyphs(tied, key)):
             ties = 2 if char in spec.TWO_TIE_CHARS else 1
             centres = sum(len(p.interiors) for p in getattr(before, "geoms", [before]))
             removed = before.area - unary_union(after).area
-            assert removed <= ties * spec.TIE_WIDTH * 0.2 * centres, char
+            assert removed <= spec.TIE_WIDTH * 0.2 * (ties * centres + 2), char
 
 
 def test_ties_change_only_the_lettering(untied, tied):
@@ -80,3 +76,17 @@ def test_a_script_word_in_several_pieces_has_every_loop_tied(untied, script_font
     tied = with_ties(replace(untied, lines={"surname": word}), "script", width=0.08)
     assert all(not part.interiors for _, part in tied.cutouts)
     assert check_plate(tied, full_text=True, drop_outs=False) == []
+
+
+def test_a_narrow_opening_into_a_centre_becomes_a_full_tie():
+    # a C whose opening is only 0.02": the copper inside hangs by a hairline until the opening is
+    # widened to a full tie (in Cinzel's E, the gap between an arm's serif and the next arm)
+    from shapely.geometry import box
+
+    ring = box(0, 0, 0.5, 0.5).difference(box(0.15, 0.15, 0.35, 0.35))
+    letter = ring.difference(box(0.3, 0.24, 0.6, 0.26))
+    tied = tie_region(letter, 1, 0.08)
+    assert tied.geom_type == "Polygon" and not tied.interiors
+    copper = box(-1, -1, 2, 2).difference(tied)
+    assert copper.buffer(-0.0399).geom_type == "Polygon"  # the inside stays joined through 0.08"
+    assert letter.area - tied.area < 0.08 * 0.2  # only the lips of the opening are trimmed

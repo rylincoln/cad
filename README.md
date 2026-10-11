@@ -3,7 +3,10 @@
 Pierced copper plate (0.020" sheet, 16 × 9.5" oval), or brass from SendCutSend, for Mary Theresa and James Guinn Fitzgerald.
 The surname is in Great Vibes script, and the names and dates in Cinzel. Every letter center and
 script loop is held in the plate by a 0.08" **stencil tie**, so nothing drops out and nothing needs
-gluing back. D and 0 get two ties; every other center gets one.
+gluing back. D and 0 get two ties; every other center gets one. Some strokes curl back almost
+onto themselves: an E's arm and its serif, the tops of the script g and a, the r behind its serifs,
+the 3's top hook. Each of those gaps is opened to a full 0.08" tie too, since it's all that holds
+the copper inside.
 Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
 
 ## Files (`out/`)
