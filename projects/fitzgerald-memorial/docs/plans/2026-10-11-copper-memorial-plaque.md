@@ -1,5 +1,9 @@
 # Copper Memorial Plaque Implementation Plan
 
+> Written before the project moved into `projects/fitzgerald-memorial/`. Its paths are from the repo
+> root as it was then: `memorial/`, `tests/`, `out/` and `build.py` now sit in this project folder,
+> and `docs/superpowers/` is now this project's `docs/`. Run `tools/py` from the repo root.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Generate validated, Carbide Create-ready cut files (DXF + SVG, inches) for the pierced

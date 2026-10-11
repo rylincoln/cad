@@ -1,6 +1,6 @@
 """Build every memorial plate file into out/. Writes nothing if any cutting rule fails.
 
-Run:  tools/py build.py
+Run from the repo root:  tools/py projects/fitzgerald-memorial/build.py
 """
 from __future__ import annotations
 

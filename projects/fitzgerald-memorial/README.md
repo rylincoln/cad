@@ -7,7 +7,7 @@ gluing back. D and 0 get two ties; every other center gets one. Some strokes cur
 onto themselves: an E's arm and its serif, the tops of the script g and a, the r behind its serifs,
 the 3's top hook. Each of those gaps is opened to a full 0.08" tie too, since it's all that holds
 the copper inside.
-Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
+Design: `docs/specs/2026-10-11-copper-memorial-plaque-design.md`.
 
 ## Files (`out/`)
 
@@ -91,6 +91,7 @@ the border line, so they're used to line the job up.
 ## Rebuild
 
 ```bash
-tools/py -m pytest -q   # tests
-tools/py build.py       # regenerate out/ (refuses to write if a cutting rule fails)
+# from the repo root
+tools/py -m pytest projects/fitzgerald-memorial -q   # tests
+tools/py projects/fitzgerald-memorial/build.py       # regenerate out/ (refuses to write if a cutting rule fails)
 ```

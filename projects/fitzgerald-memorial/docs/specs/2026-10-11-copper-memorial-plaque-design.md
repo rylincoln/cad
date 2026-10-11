@@ -319,3 +319,10 @@ Places fixed:
 
 Openings that already clear 0.06" are left as drawn. A second pass that opened every neck to 0.08"
 was tried and dropped: it bit into an S whose mouth was already 0.077".
+
+## Revision 6 (repo holds several projects)
+
+The repo now holds more than this plate, so everything for it lives in `projects/fitzgerald-memorial/`:
+the `memorial/` package, `tests/`, `build.py`, `out/` and these docs. Paths in this document are
+relative to that folder. The fonts stay in the repo's shared `fonts/`, and `tools/py` stays at the
+repo root. Build with `tools/py projects/fitzgerald-memorial/build.py`.
