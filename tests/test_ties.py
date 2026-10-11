@@ -54,3 +54,12 @@ def test_ties_take_only_a_narrow_strip_of_each_letter(final, tied):
 def test_the_glue_back_plate_is_unchanged(final, tied):
     assert sum(len(p.interiors) for _, p in final.cutouts) == 23
     assert tied.outline.equals(final.outline) and tied.holes == final.holes and tied.knot == final.knot
+
+
+@pytest.mark.parametrize("width", [0.08])
+def test_wider_ties_still_fit_the_small_letters(final, width):
+    # a wide tie's square ends must clear the tight curves inside the small 9, p and 6
+    tied = with_ties(final, "wide", width=width)
+    assert check_plate(tied, full_text=True, drop_outs=False) == []
+    d = dict(_glyphs(tied, "surname"))["D"]
+    assert d.geoms[0].distance(d.geoms[1]) == pytest.approx(width, abs=0.002)

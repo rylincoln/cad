@@ -10,16 +10,31 @@ from memorial import spec
 from memorial.plate import Plate
 
 SAMPLE_STEP = 0.004  # in, between candidate tie positions along a centre's edge
-OVERSHOOT = 0.02     # in, a tie runs this far past both edges of the stroke so it cuts clean through
+OVERSHOOTS = (0.02, 0.035, 0.05)  # in, how far a tie may run past the stroke's edges to clear a tight curve
 SLIVER_AREA = 1e-4   # sq in; scraps of stroke this small left beside a tie become plate
 EVEN = 0.003         # in; crossings within this of each other count as the same stroke width
 
 
-def _band(segment: LineString, width: float) -> Polygon:
+def _band(segment: LineString, width: float, overshoot: float) -> Polygon:
     (x0, y0), (x1, y1) = segment.coords
     ux, uy = (x1 - x0) / segment.length, (y1 - y0) / segment.length
-    run = LineString([(x0 - ux * OVERSHOOT, y0 - uy * OVERSHOOT), (x1 + ux * OVERSHOOT, y1 + uy * OVERSHOOT)])
+    run = LineString([(x0 - ux * overshoot, y0 - uy * overshoot), (x1 + ux * overshoot, y1 + uy * overshoot)])
     return run.buffer(width / 2, cap_style="flat")
+
+
+def _clean_tie(region: Polygon, centre: Polygon, outline: Polygon, segment: LineString, width: float):
+    """The shortest tie along `segment` whose square ends land inside the centre and outside the letter,
+    crossing only this one stroke; None if there is none."""
+    p, q = (Point(c) for c in segment.coords)
+    for overshoot in OVERSHOOTS:
+        tie = _band(segment, width, overshoot)
+        corners = [Point(c) for c in tie.exterior.coords[:4]]
+        near = [c for c in corners if c.distance(p) < c.distance(q)]
+        far = [c for c in corners if c.distance(p) >= c.distance(q)]
+        if (all(centre.contains(c) for c in near) and not any(outline.contains(c) for c in far)
+                and region.intersection(tie).geom_type == "Polygon"):
+            return tie
+    return None
 
 
 def _crossings(region: Polygon, ring, width: float) -> list[tuple[float, float, LineString, Polygon]]:
@@ -37,11 +52,8 @@ def _crossings(region: Polygon, ring, width: float) -> list[tuple[float, float, 
         segment = LineString([p, q])
         if segment.length == 0 or not inside.covers(segment):
             continue
-        tie = _band(segment, width)
-        corners = [Point(c) for c in tie.exterior.coords[:4]]
-        near = [c for c in corners if c.distance(p) < c.distance(q)]
-        far = [c for c in corners if c.distance(p) >= c.distance(q)]
-        if all(centre.contains(c) for c in near) and not any(outline.contains(c) for c in far):
+        tie = _clean_tie(region, centre, outline, segment, width)
+        if tie is not None:
             out.append((segment.length, s, segment, tie))
     return out
 
