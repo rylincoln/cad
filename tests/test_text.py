@@ -63,3 +63,31 @@ def test_widths_match_the_approved_cuttable_preview(font):
                 "Feb 6, 1935": 3.581, "Apr 19, 1939": 4.094, "December 30, 2025": 6.968}
     for text, width in widths.items():
         assert width == pytest.approx(expected[text], abs=0.05), text
+
+
+@pytest.mark.parametrize("text, em", [("Mary Theresa", 0.771), ("Feb 6, 1935", 0.679), ("Apr 19, 1939", 0.679),
+                                      ("December 30, 2025", 0.700)])
+def test_thickening_closes_loops_with_a_cuttable_wall(font, text, em):
+    # thickening closes the small r, p, 6, 9 and B loops; the joint must be wide enough to cut,
+    # so every letter centre still drops out instead of staying tacked to the plate
+    line = set_line(font, text, em=em, thicken=0.012, min_slot=0.05)
+    for char, glyph in zip(line.chars, line.glyphs):
+        core = glyph.buffer(-0.025)
+        assert core.geom_type == "Polygon" and len(core.interiors) == len(glyph.interiors), char
+
+
+def test_widening_takes_only_what_each_wall_needs_and_keeps_the_outline(font):
+    from shapely.geometry import Polygon
+
+    for text, em in [("Feb 6, 1935", 0.679), ("Apr 19, 1939", 0.679), ("Mary Theresa", 0.771)]:
+        plain = set_line(font, text, em=em, thicken=0.012)
+        fixed = set_line(font, text, em=em, thicken=0.012, min_slot=0.05)
+        for char, a, b in zip(plain.chars, plain.glyphs, fixed.glyphs):
+            dx = b.bounds[0] - a.bounds[0]
+            a_outline = Polygon(a.exterior.coords)
+            b_outline = Polygon([(x - dx, y) for x, y in b.exterior.coords])
+            assert a_outline.symmetric_difference(b_outline).area < 1e-5, char
+            before = sum(Polygon(r).area for r in a.interiors)
+            after = sum(Polygon(r).area for r in b.interiors)
+            if before:
+                assert after / before >= 0.78, (char, after / before)

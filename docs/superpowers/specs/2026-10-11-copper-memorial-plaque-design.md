@@ -27,7 +27,7 @@ Success means:
 | Final sheet | about 18 × 10" |
 | Space on the slice | about 16" wide × 10" tall, centered |
 | Machine | Shapeoko Pro with a VFD spindle. The slice does not fit on the machine. |
-| Finest bit | Tapered ball nose: about 0.035" at the tip to 0.25" over 1.5" (about 4.1° per side), round tip |
+| Finest bit | Tapered ball nose, R1/64" × 1.5" × 1/4" (a 1/32" ball tip); Carbide Create's 1/32" ball mill preset |
 | Hold-down | Sheet taped or glued flat to a wasteboard (painter's tape plus CA recommended) |
 | CAM | Carbide Create builds the toolpaths, Carbide Motion runs the G-code |
 | Mounting | Flexible adhesive plus #16 copper escutcheon pins through 8 holes |
@@ -93,6 +93,10 @@ Sizes are capital-letter heights. The positions are the approved mockup's baseli
 - **Per-pair spacing:** after thickening, each glyph is pushed right just far enough that
   at least **0.06"** of copper separates it from the glyphs already set on the line. Only
   pairs that were too tight move.
+- **Closed loops:** where thickening closes a loop (the small r, p, 6, 9 and B) with a wall
+  thinner than 0.05", that wall is grown just enough to reach 0.05" (+0.005"). It grows
+  into the letter center, or both ways when it separates two centers, and never past the
+  letter's outline.
 - **Centering:** each line is centered on its ink, not its advance width.
 - **Column x:** half the widest column, plus half the knot's cut width, plus a **0.24"**
   space between the knot's cut edge and the nearest letter (about ±4.12", exactly the
@@ -119,9 +123,9 @@ Sizes are capital-letter heights. The positions are the approved mockup's baseli
 
 The build fails with a clear message if any rule fails.
 
-1. **Narrowest slot: 0.05".** No cutout has a neck narrower than 0.05" (shrinking any
-   cutout by 0.025" never splits it or makes it vanish). Sharp corners are exempt, since
-   they simply round off to about 0.02" radius.
+1. **Narrowest slot: 0.05".** No cutout has a neck narrower than 0.05": shrinking any
+   cutout by 0.025" never splits it, makes it vanish, or opens a wall around a letter
+   center. Sharp corners are exempt, since they simply round off to about 0.02" radius.
 2. **Narrowest copper: 0.06"** between any two separate cutouts, which covers neighboring
    letters and the knot's bridges (designed at 0.08").
 3. **Loose pieces:** every letter center that drops out is at least 0.06" across, so it
@@ -188,14 +192,14 @@ written from the same geometry.
 These are starting points to tune on the practice sheet; the user sets them in Carbide
 Create.
 
-- **Tool:** enter the tapered bit as a 0.035" ball nose. At these depths its taper only
-  widens the cut about 0.003", which is negligible.
+- **Tool:** Carbide Create's 1/32" ball mill preset, which matches the R1/64" tip. At these
+  depths the taper only widens the cut about 0.003", which is negligible.
 - **Through-cuts:** about **0.043"** deep: the copper (0.020"), plus the ball's radius
-  (about 0.018") so the full width breaks through, plus 0.005" into the tape and
+  (0.016") so the full width breaks through, plus about 0.005" into the tape and
   wasteboard.
 - **Feeds and speeds:** about 0.005" per pass (9 passes), about 18,000 RPM, about 10 IPM,
   3 IPM plunge, with cutting fluid.
-- **Engraving:** 0.006" deep, which leaves a groove about 0.026" wide with the ball tip.
+- **Engraving:** 0.006" deep, which leaves a groove about 0.025" wide with the ball tip.
 - **Order:** engrave, then inside cuts, then the outline last.
 - **Hold-down:** keep the sheet fully adhered during the cut. Release it by peeling or
   with acetone, never by prying, since the 0.020" plate bends easily.
@@ -242,3 +246,12 @@ The user approved the fix on a side-by-side render of the real cut geometry:
 
 The geometry engine moved from build123d to shapely, with polyline and circle output, for
 Carbide Create compatibility.
+
+## Revision 2 (final review)
+
+The whole-branch review found that thickening closed the loops of the small r, p, 6, 9 and
+B with walls of only 0.012–0.030", thinner than the bit. Rule 1's piece count could not see
+a wall vanishing around a letter center, so 12 letters passed. Rule 1 now also requires
+every letter center to stay surrounded. Those walls are grown inward to 0.05", which keeps
+80–92% of each center and leaves every outline unchanged. The spec's choice to close these
+loops (23 loose pieces) stands.

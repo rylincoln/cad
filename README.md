@@ -14,22 +14,31 @@ Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
 
 ## Carbide Create
 
-1. **Import and check the scale.** Import the SVG (or the DXF), then check that the oval
+1. **Set up the job before importing.** Stock **18 × 10"** for the final (**13 × 8"** for the
+   practice piece), thickness **0.020"**. Zero X and Y at the **lower-left corner of the copper
+   sheet**, and Z at the **top of the copper**. The files are drawn in those sheet coordinates.
+2. **Import and check the scale.** Import the SVG (or the DXF), then check that the oval
    measures **16.000 × 9.500"** (practice 12.5 × 7.5"). If it doesn't, the import scale is wrong.
-2. **Set the tool.** Enter the tapered bit as a **0.035" ball nose**.
-3. **Build the toolpaths in this order:**
+   The **grey rectangle** is just the sheet's outline, for lining things up. Give it no
+   toolpath (or delete it).
+3. **Set the tool.** The bit is a tapered ball nose, R1/64" × 1.5" × 1/4": a **1/32" ball** at
+   the tip. Use Carbide Create's **1/32" ball mill** preset, and replace its feeds with the
+   ones below.
+4. **Build the toolpaths in this order:**
 
    | Vectors (colour) | Toolpath | Depth |
    |---|---|---|
-   | Border (green) | Contour, no offset | 0.006" |
+   | Border (green) | Contour, no offset | 0.006" (a groove about 0.025" wide) |
    | Letters, knot, pin holes (red) | Contour, **inside** | 0.043" |
    | Oval edge (blue) | Contour, **outside** | 0.043" |
 
-4. **Feeds and speeds:** about 18,000 RPM, 10 IPM, 3 IPM plunge, 0.005" per pass, with
+   0.043" is the copper (0.020"), plus the ball's radius (0.016") so the cut is full width at
+   the bottom, plus a little into the tape.
+5. **Feeds and speeds:** about 18,000 RPM, 10 IPM, 3 IPM plunge, 0.005" per pass, with
    cutting fluid.
-5. **Preview the simulation.** Check that every letter center (in A, D, B, 0, and the small
+6. **Preview the simulation.** Check that every letter center (in A, D, B, 0, and the small
    r, p, 6 and 9) stays as an island.
-6. **Hold-down and removal:** keep the sheet fully glued down. Remove it by peeling or with
+7. **Hold-down and removal:** keep the sheet fully glued down. Remove it by peeling or with
    acetone, never by prying. Save the 23 letter centers (19 on the practice piece) and glue
    them back onto the wood in place.
 

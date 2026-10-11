@@ -24,9 +24,11 @@ def check_plate(plate: Plate, *, full_text: bool) -> list[str]:
     problems: list[str] = []
     cutouts = plate.cutouts
 
-    # 1. narrowest slot: shrinking a cutout by half the rule must leave exactly one piece
+    # 1. narrowest slot: shrinking a cutout by half the rule must leave exactly one piece that
+    #    still surrounds every letter centre (a thin wall around a centre vanishes without splitting)
     for label, region in cutouts:
-        if _count(region.buffer(-spec.MIN_SLOT / 2)) != 1:
+        core = region.buffer(-spec.MIN_SLOT / 2)
+        if _count(core) != 1 or len(core.interiors) != len(region.interiors):
             problems.append(f"slot narrower than {spec.MIN_SLOT}\" in {label} at {_where(region)}")
 
     # 2. narrowest copper between any two separate cutouts (pin holes included)

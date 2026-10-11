@@ -53,7 +53,7 @@ def pin_holes(border: LineString, count: int) -> tuple[tuple[float, float], ...]
 
 
 def build_final(font: Font) -> Plate:
-    lines = {key: set_line(font, s.text, s.em, s.tracking_em, s.thicken, spec.MIN_LETTER_GAP)
+    lines = {key: set_line(font, s.text, s.em, s.tracking_em, s.thicken, spec.MIN_LETTER_GAP, min_slot=spec.MIN_SLOT)
              for key, s in spec.LINES.items()}
     knot = tuple(knot_cutouts(spec.KNOT_HEIGHT, spec.KNOT_CENTER, spec.KNOT_BAND, spec.KNOT_BRIDGE, spec.KNOT_TIP_DEG))
     knot_width = max(p.bounds[2] for p in knot) - min(p.bounds[0] for p in knot)

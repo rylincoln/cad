@@ -66,3 +66,11 @@ def test_letters_that_run_together_are_reported():
 
 def test_the_real_final_plate_passes_every_rule(final):
     assert check_plate(final, full_text=True) == []
+
+
+def test_a_thin_wall_around_a_letter_centre_is_reported():
+    # the counter's wall to the outside is only 0.02" on one side: the bit cannot cut it,
+    # so the centre would stay tacked to the plate instead of dropping out
+    letter = Polygon(box(0, 0, 0.5, 0.5).exterior.coords, [box(0.1, 0.1, 0.48, 0.4).exterior.coords])
+    problems = check_plate(_plate([letter]), full_text=True)
+    assert any("slot narrower" in p for p in problems)
