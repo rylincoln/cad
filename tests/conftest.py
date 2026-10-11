@@ -14,3 +14,10 @@ def final(font):
     from memorial.plate import build_final
 
     return build_final(font)
+
+
+@pytest.fixture(scope="session")
+def practice(final):
+    from memorial.plate import build_practice
+
+    return build_practice(final)

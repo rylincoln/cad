@@ -1,11 +1,12 @@
-"""Assemble the final plate (and, in Task 6, the practice window) from the spec."""
+"""Assemble the final plate, its practice window, and the outline-only plate from the spec."""
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass, replace
 
 from shapely import affinity
-from shapely.geometry import LineString, Point, Polygon
+from shapely.geometry import LineString, Point, Polygon, box
+from shapely.ops import linemerge
 
 from memorial import spec
 from memorial.font import Font
@@ -64,3 +65,39 @@ def build_final(font: Font) -> Plate:
     w, h = spec.FINAL_SHEET
     return Plate("final", spec.FINAL_SHEET, (w / 2, h / 2), outline, (border,), placed, knot,
                  pin_holes(border, spec.HOLE_COUNT))
+
+
+def _line_parts(geom) -> list[LineString]:
+    if geom.is_empty:
+        return []
+    if geom.geom_type == "LineString":
+        return [geom]
+    lines = [g for g in getattr(geom, "geoms", []) if g.geom_type == "LineString"]
+    if not lines:
+        return []
+    merged = linemerge(lines)
+    return list(getattr(merged, "geoms", [merged]))
+
+
+def build_practice(final: Plate) -> Plate:
+    """A 12.5 x 7.5 window of the final plate: same coordinates, whole glyphs only."""
+    x0, y0, x1, y1 = spec.PRACTICE_WINDOW
+    m = spec.PRACTICE_MARGIN
+    window = box(x0, y0, x1, y1)
+    keep = box(x0 + m, y0 + m, x1 - m, y1 - m)
+    lines = {}
+    for key, line in final.lines.items():
+        kept = [(c, g) for c, g in zip(line.chars, line.glyphs) if keep.contains(g)]
+        if kept:
+            chars, glyphs = zip(*kept)
+            lines[key] = replace(line, chars=tuple(chars), glyphs=tuple(glyphs))
+    knot = final.knot if all(keep.contains(p) for p in final.knot) else ()
+    holes = tuple(h for h in final.holes if keep.contains(Point(h).buffer(spec.HOLE_DIAMETER / 2)))
+    border = tuple(part for b in final.border for part in _line_parts(b.intersection(keep)))
+    return Plate("practice", spec.PRACTICE_SHEET, (m - x0, m - y0), final.outline.intersection(window),
+                 border, lines, knot, holes)
+
+
+def outline_only(final: Plate) -> Plate:
+    """Just the oval's edge, for whoever does the inlay and tile work around the plate."""
+    return replace(final, name="plate_outline", border=(), lines={}, knot=(), holes=())
