@@ -10,7 +10,7 @@ from pathlib import Path
 from cadgen.drawing_checks import validate_dxf_file
 
 from memorial import spec
-from memorial.export import write_dxf, write_pdf, write_svg
+from memorial.export import write_cut_dxf, write_dxf, write_pdf, write_svg
 from memorial.font import Font
 from memorial.plate import Plate, build_final, build_practice, outline_only
 from memorial.rules import check_plate
@@ -51,6 +51,11 @@ def build(out_dir: Path = OUT) -> dict:
         errors = [f.render() for f in validate_dxf_file(dxf) if f.severity == "error"]
         if errors:
             raise BuildError({plate.name: errors})
+    laser = out_dir / "final_sendcutsend.dxf"
+    write_cut_dxf(final, laser)
+    errors = [f.render() for f in validate_dxf_file(laser) if f.severity == "error"]
+    if errors:
+        raise BuildError({laser.stem: errors})
     write_pdf(final, out_dir / "final_fullsize.pdf")
     return {"final": summarize(final), "practice": summarize(practice)}
 

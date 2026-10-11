@@ -4,7 +4,8 @@ import build
 from memorial import spec
 
 EXPECTED_FILES = {"final.dxf", "final.svg", "practice.dxf", "practice.svg",
-                  "plate_outline.dxf", "plate_outline.svg", "final_fullsize.pdf"}
+                  "plate_outline.dxf", "plate_outline.svg", "final_fullsize.pdf",
+                  "final_sendcutsend.dxf"}
 
 
 def test_build_writes_every_file_and_reports_the_counts(tmp_path):

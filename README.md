@@ -11,6 +11,7 @@ Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
 | `final.svg` / `.dxf` | The real plate, on the 18 × 10" sheet |
 | `plate_outline.svg` / `.dxf` | The oval's edge only, for the inlay and tile work |
 | `final_fullsize.pdf` | Print at 100% on 11 × 17" paper and lay it on the slice |
+| `final_sendcutsend.dxf` | The real plate, through-cuts only, for ordering from SendCutSend |
 
 ## Carbide Create
 
@@ -41,6 +42,17 @@ Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
 7. **Hold-down and removal:** keep the sheet fully glued down. Remove it by peeling or with
    acetone, never by prying. Save the 23 letter centers (19 on the practice piece) and glue
    them back onto the wood in place.
+
+## SendCutSend
+
+Upload `final_sendcutsend.dxf` and confirm units as **INCH**. The part should read **16 × 9.5"**.
+The file holds only the through-cuts: the oval, the lettering, the knot and the 8 pin holes.
+It leaves out the grey sheet rectangle (a laser cuts every line it's sent) and the border line.
+SendCutSend can't put the border line on this part: their engraving only takes parts up to
+12.1 × 12.1", and they don't etch brass. Every cut clears the minimums for brass 0.040" and 0.063".
+
+SendCutSend doesn't return pieces that drop out. Unless they're joined to the part, the 23
+letter centers (A, D, R, B, 0, 6, 9 and the rest) are cut loose and thrown away.
 
 ## Rebuild
 

@@ -1,10 +1,11 @@
-"""Write a Plate as DXF and SVG (inches, sheet coordinates) and the final plate as a 1:1 PDF."""
+"""Write a Plate as DXF and SVG (inches, sheet coordinates), a cut-only DXF for a laser shop, and a 1:1 PDF."""
 from __future__ import annotations
 
 from pathlib import Path
 
 import ezdxf
 import matplotlib
+from ezdxf import bbox
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -69,6 +70,30 @@ def write_dxf(plate: Plate, path: Path) -> None:
             msp.add_circle(data, spec.HOLE_DIAMETER / 2, dxfattribs={"layer": layer})
         else:
             msp.add_lwpolyline(data, close=closed, dxfattribs={"layer": layer})
+    doc.saveas(path)
+
+
+def write_cut_dxf(plate: Plate, path: Path) -> None:
+    """Only the through-cuts, for a laser shop: no sheet rectangle, no engraving, plate's lower-left at the origin."""
+    minx, miny, _, _ = plate.outline.bounds
+    x0, y0 = minx + plate.offset[0], miny + plate.offset[1]
+    doc = ezdxf.new("R2010", setup=False)
+    doc.header["$INSUNITS"] = 1     # inches
+    doc.header["$MEASUREMENT"] = 0  # imperial
+    doc.layers.add("CUT", color=7)
+    msp = doc.modelspace()
+    for layer, kind, data, closed in layer_items(plate):
+        if not layer.startswith("CUT_"):
+            continue
+        if kind == "circle":
+            msp.add_circle((data[0] - x0, data[1] - y0), spec.HOLE_DIAMETER / 2, dxfattribs={"layer": "CUT"})
+        else:
+            msp.add_lwpolyline([(x - x0, y - y0) for x, y in data], close=closed, dxfattribs={"layer": "CUT"})
+    extents = bbox.extents(msp)
+    # ezdxf copies the layout's extents into the header on save, but skips a corner at exactly (0, 0, 0)
+    msp.reset_extents(extents.extmin, extents.extmax)
+    doc.header["$EXTMIN"] = extents.extmin
+    doc.header["$EXTMAX"] = extents.extmax
     doc.saveas(path)
 
 
