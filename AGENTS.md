@@ -15,8 +15,9 @@ CAD projects for CNC and laser work, written in Python. Each project generates i
 ## Commands
 
 Always run Python through `tools/py`, from the repo root. It runs the pinned cadgen 0.7.20
-environment (Python 3.13, shapely, fontTools, ezdxf, matplotlib, numpy, pytest) with uvx. There
-is no virtualenv or requirements file, and nothing to install.
+environment from [text-to-cad](https://github.com/earthtojake/text-to-cad) (Python 3.13,
+shapely, fontTools, ezdxf, matplotlib, numpy, pytest) with uvx. There is no virtualenv or
+requirements file, and nothing to install.
 
 ```bash
 tools/py -m pytest projects/<name> -q     # one project's tests, using its own pytest.ini

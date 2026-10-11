@@ -7,7 +7,8 @@ keeps everything in its own folder: code, tests, docs, and the files to cut in `
 |---|---|
 | [`fitzgerald-memorial`](projects/fitzgerald-memorial/README.md) | Pierced copper or brass memorial plate, a 16 × 9.5" oval, for Mary Theresa and James Guinn Fitzgerald |
 
-Run everything from the repo root through `tools/py`, the shared Python environment:
+Run everything from the repo root through `tools/py`, the shared Python environment (the pinned
+cadgen environment from [text-to-cad](https://www.texttocad.dev)):
 
 ```bash
 tools/py -m pytest projects/<name> -q   # tests
@@ -27,10 +28,13 @@ to each font:
   [github.com/googlefonts/great-vibes](https://github.com/googlefonts/great-vibes). Licence:
   `fonts/OFL-GreatVibes.txt`.
 
+**Toolkit:** [text-to-cad](https://www.texttocad.dev) by earthtojake (Thompson Labs LLC), MIT,
+[github.com/earthtojake/text-to-cad](https://github.com/earthtojake/text-to-cad). Its
+[cadgen](https://pypi.org/project/cadgen/) package (pinned at 0.7.20) is the Python environment
+`tools/py` runs, and supplies the DXF checks and the preview snapshots.
+
 **Libraries**, installed by `tools/py` and not stored in this repo:
 
-- [cadgen](https://github.com/earthtojake/text-to-cad) (text-to-cad), MIT: the Python
-  environment, DXF checks and preview snapshots.
 - [shapely](https://github.com/shapely/shapely), BSD-3-Clause: all the 2D geometry.
 - [fontTools](https://github.com/fonttools/fonttools), MIT: glyph outlines and kerning.
 - [ezdxf](https://github.com/mozman/ezdxf), MIT: reading and writing DXF.
