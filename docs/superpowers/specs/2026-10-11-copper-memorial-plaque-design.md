@@ -94,8 +94,9 @@ Sizes are capital-letter heights. The positions are the approved mockup's baseli
   at least **0.06"** of copper separates it from the glyphs already set on the line. Only
   pairs that were too tight move.
 - **Centering:** each line is centered on its ink, not its advance width.
-- **Column x:** half the widest column, plus half the knot's width, plus a **0.30"**
-  space between the knot and the nearest letter (about ±4.12").
+- **Column x:** half the widest column, plus half the knot's cut width, plus a **0.24"**
+  space between the knot's cut edge and the nearest letter (about ±4.12", exactly the
+  approved preview; its "0.30"" was measured from the knot's centerline extent).
 - **Positions:** the baselines are the approved mockup's. The checks below are the
   authority, not these reference numbers.
 
@@ -237,7 +238,7 @@ The user approved the fix on a side-by-side render of the real cut geometry:
 - thicken the small text by 0.012";
 - open only the pairs that are too tight, to 0.06" of copper;
 - set the narrowest-slot rule to 0.05" and the narrowest-copper rule to 0.06";
-- make the knot 1.20" tall, with a 0.30" gap to the names.
+- make the knot 1.20" tall, with a 0.24" edge-to-edge gap to the names (quoted as 0.30", measured from the knot's centerline).
 
 The geometry engine moved from build123d to shapely, with polyline and circle output, for
 Carbide Create compatibility.

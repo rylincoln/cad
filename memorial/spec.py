@@ -55,7 +55,7 @@ KNOT_CENTER = (0.0, -0.32)
 KNOT_BAND = 0.10
 KNOT_BRIDGE = 0.08
 KNOT_TIP_DEG = 90.0
-KNOT_SIDE_GAP = 0.30
+KNOT_SIDE_GAP = 0.24  # between the knot's cut edge and the nearest letter (reproduces the approved preview)
 
 # sheets
 FINAL_SHEET = (18.0, 10.0)

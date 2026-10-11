@@ -52,7 +52,7 @@ and render the DXF.
 **Knot**
 - 1.20" tall, centered at (0, −0.32), one leaf pointing up, tips enclosing 90°.
 - Band 0.10" wide, with 0.08" bridges at the crossings.
-- 0.30" between the knot and the nearest name or date.
+- 0.24" between the knot's cut edge and the nearest name or date (`KNOT_SIDE_GAP`; see the Task 4 ruling in the ledger).
 
 **Cutting rules**
 - No neck narrower than 0.05".
