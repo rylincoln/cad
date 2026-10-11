@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-FONT_PATH = Path(__file__).resolve().parent.parent / "fonts" / "Cinzel-Bold.ttf"
+FONT_PATH = Path(__file__).resolve().parents[3] / "fonts" / "Cinzel-Bold.ttf"  # the repo's shared fonts/
 FONT_SHA256 = "2c6b1ff0d368efb73636700b69dbef707fa5602a06d085a4e91e5125082651f0"
 SCRIPT_FONT_PATH = FONT_PATH.parent / "GreatVibes-Regular.ttf"
 SCRIPT_FONT_SHA256 = "9d76b8c67f5289c310114c935c5c3831fc3c25bc2bb888a28210c1659d701b9e"
