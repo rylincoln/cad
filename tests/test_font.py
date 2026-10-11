@@ -53,3 +53,7 @@ def test_advance_is_in_em(font):
 def test_unknown_character_is_a_clear_error(font):
     with pytest.raises(ValueError, match="no glyph"):
         font.glyph_name("☃")
+
+
+def test_the_script_font_is_the_pinned_great_vibes():
+    assert hashlib.sha256(spec.SCRIPT_FONT_PATH.read_bytes()).hexdigest() == spec.SCRIPT_FONT_SHA256

@@ -3,7 +3,7 @@ import itertools
 import pytest
 from shapely.ops import unary_union
 
-from memorial.text import set_line
+from memorial.text import set_line, set_word
 
 
 def test_thickened_names_never_have_a_neck_under_the_slot_rule(font):
@@ -91,3 +91,40 @@ def test_widening_takes_only_what_each_wall_needs_and_keeps_the_outline(font):
             after = sum(Polygon(r).area for r in b.interiors)
             if before:
                 assert after / before >= 0.78, (char, after / before)
+
+
+def _parts(glyph):
+    return list(getattr(glyph, "geoms", [glyph]))
+
+
+@pytest.fixture(scope="module")
+def script_word(script_font):
+    return set_word(script_font, "Fitzgerald", em=2.58, min_stroke=0.065)
+
+
+def test_a_script_word_is_one_joined_cut_beside_its_capital_and_i_dot(script_word):
+    assert script_word.chars == ("Fitzgerald",) and len(script_word.glyphs) == 1
+    parts = sorted(_parts(script_word.glyphs[0]), key=lambda p: p.area)
+    assert len(parts) == 3 and parts[0].area < 0.05  # the i's dot, the F, and "itzgerald" joined
+
+
+def test_every_script_stroke_is_at_least_the_minimum_width(script_word):
+    for part in _parts(script_word.glyphs[0]):
+        core = part.buffer(-0.065 / 2)
+        assert core.geom_type == "Polygon" and len(core.interiors) == len(part.interiors)
+
+
+def test_a_stroke_that_nearly_touches_another_is_trimmed_back(script_font, script_word):
+    # Great Vibes' F crossbar swash tapers to a point 0.036" short of the t: too little copper to keep,
+    # so the tip is trimmed back to leave 0.06"
+    untrimmed = set_word(script_font, "Fitzgerald", em=2.58, min_stroke=0.065, min_copper=0.0)
+    before = _parts(untrimmed.glyphs[0])
+    assert min(a.distance(b) for a, b in itertools.combinations(before, 2)) < 0.04
+    after = _parts(script_word.glyphs[0])
+    assert min(a.distance(b) for a, b in itertools.combinations(after, 2)) >= 0.06 - 1e-9
+    assert sum(p.area for p in before) - sum(p.area for p in after) < 0.002  # only the tip
+
+
+def test_a_script_word_is_centred_on_its_ink(script_word):
+    minx, _, maxx, _ = script_word.glyphs[0].bounds
+    assert minx == pytest.approx(-maxx, abs=1e-9) and script_word.width == pytest.approx(maxx - minx)

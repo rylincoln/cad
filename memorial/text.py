@@ -1,6 +1,7 @@
-"""Set one line of lettering: kerned glyphs, optional thickening, and per-pair spacing for copper."""
+"""Set lettering for copper: kerned lines of separate letters, or one joined script word."""
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass
 
 from shapely import affinity
@@ -95,3 +96,60 @@ def set_line(font: Font, text: str, em: float, tracking_em: float = 0.0, thicken
     shift = -(minx + maxx) / 2
     glyphs = tuple(affinity.translate(p, shift, 0) for p in placed)
     return SetLine(text, tuple(chars), glyphs, maxx - minx, tuple(pushes))
+
+
+def _parts(shape) -> list[Polygon]:
+    return list(getattr(shape, "geoms", [shape]))
+
+
+def _strokes_at_least(shape, width: float) -> bool:
+    for part in _parts(shape):
+        core = part.buffer(-width / 2)
+        if core.is_empty or core.geom_type != "Polygon" or len(core.interiors) != len(part.interiors):
+            return False
+    return True
+
+
+def _part_strokes(shape, min_copper: float):
+    """Trim back the smaller of any two strokes that come within `min_copper` of each other without
+    joining, so the copper left between them can be kept (in practice, a swash's tapered tip)."""
+    for _ in range(10):
+        parts = _parts(shape)
+        close = next(((a, b) for a, b in itertools.combinations(parts, 2) if a.distance(b) < min_copper), None)
+        if close is None:
+            break
+        small, big = sorted(close, key=lambda p: p.area)
+        clear = big.buffer(min_copper + 0.001)  # the buffer's flat segments would otherwise cut a hair short
+        trimmed = [p for p in _parts(small.difference(clear)) if p.area > 1e-4]
+        shape = unary_union([p for p in parts if p is not small] + trimmed)
+    return shape
+
+
+def set_word(font: Font, text: str, em: float, min_stroke: float, min_copper: float = 0.06,
+             min_slot: float = 0.05, step: float = 0.002) -> SetLine:
+    """Set a joined script word as one cut, centred on its ink (x = 0) with the baseline at y = 0.
+
+    The glyphs overlap where the font joins them. The word is grown outward (mitred) in `step`s just
+    until every stroke is `min_stroke` wide, strokes that nearly touch are trimmed apart, and thin
+    walls around its loops are widened as in set_line.
+    """
+    names = [font.glyph_name(c) for c in text]
+    x, shapes = 0.0, []
+    for i, name in enumerate(names):
+        outline = font.outline(name)
+        if not outline.is_empty:
+            shapes.append(affinity.translate(affinity.scale(outline, em, em, origin=(0, 0)), x, 0))
+        kern = font.kerning(name, names[i + 1]) if i + 1 < len(names) else 0.0
+        x += (font.advance(name) + kern) * em
+    plain = unary_union(shapes)
+    word, thicken = plain, 0.0
+    while not _strokes_at_least(word, min_stroke):
+        thicken += step
+        word = plain.buffer(thicken, join_style="mitre")
+    if min_copper:
+        word = _part_strokes(word, min_copper)
+    if min_slot:
+        word = _widen_thin_walls(word, min_slot)
+    minx, _, maxx, _ = word.bounds
+    word = affinity.translate(word, -(minx + maxx) / 2, 0)
+    return SetLine(text, (text.replace(" ", ""),), (word,), maxx - minx)
