@@ -15,10 +15,17 @@ def script_font():
 
 
 @pytest.fixture(scope="session")
-def final(font):
+def untied(font, script_font):
+    from memorial.plate import layout_final
+
+    return layout_final(font, script_font)
+
+
+@pytest.fixture(scope="session")
+def final(font, script_font):
     from memorial.plate import build_final
 
-    return build_final(font)
+    return build_final(font, script_font)
 
 
 @pytest.fixture(scope="session")

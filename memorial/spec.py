@@ -30,6 +30,8 @@ BORDER_CLEARANCE = 0.30
 # lettering
 SMALL_TEXT_THICKEN = 0.012
 MIN_LETTER_GAP = 0.06
+SURNAME_MIN_STROKE = 0.065  # in, the script surname's thinnest stroke ("a bit thicker" than the 0.05" slot rule)
+SURNAME_CLEARANCE = 0.2     # in, at least this between the script surname and the names, dates and knot
 
 
 @dataclass(frozen=True)
@@ -40,10 +42,12 @@ class LineSpec:
     thicken: float      # grown outward on every edge, in
     baseline: float     # y, in
     column: int         # -1 left column, 0 centred, +1 right column
+    script: bool = False     # one joined word in the script font instead of separate Roman letters
+    min_stroke: float = 0.0  # script only: thickened until every stroke is at least this wide, in
 
 
 LINES: dict[str, LineSpec] = {
-    "surname": LineSpec("FITZGERALD", 1.664, 0.045, 0.0, 0.966, 0),
+    "surname": LineSpec("Fitzgerald", 2.58, 0.0, 0.0, 1.30, 0, script=True, min_stroke=SURNAME_MIN_STROKE),
     "name_left": LineSpec("Mary Theresa", 0.771, 0.0, SMALL_TEXT_THICKEN, -0.098, -1),
     "name_right": LineSpec("James Guinn", 0.771, 0.0, SMALL_TEXT_THICKEN, -0.098, +1),
     "date_left": LineSpec("Feb 6, 1935", 0.679, 0.0, SMALL_TEXT_THICKEN, -1.001, -1),
@@ -60,11 +64,11 @@ KNOT_TIP_DEG = 90.0
 KNOT_SIDE_GAP = 0.24  # between the knot's cut edge and the nearest letter (reproduces the approved preview)
 
 # stencil ties, for a laser shop that can't return drop-outs: strips of plate left across a stroke
-TIE_WIDTH = 0.06        # in: the copper rule, three times SendCutSend's 0.020" bridge minimum for 0.040" brass
+TIE_WIDTH = 0.08        # in: the widest that fits the small A of "Mary"; four times SendCutSend's 0.020" minimum
 TWO_TIE_CHARS = "D0"    # bowls tied top and bottom, as stencil lettering does; every other centre gets one tie
 
 # sheets
 FINAL_SHEET = (18.0, 10.0)
 PRACTICE_SHEET = (13.0, 8.0)
-PRACTICE_WINDOW = (-8.0, -3.75, 4.5, 3.75)  # minx, miny, maxx, maxy in plate coordinates
+PRACTICE_WINDOW = (-7.3, -3.75, 5.2, 3.75)  # minx, miny, maxx, maxy: the whole script surname fits
 PRACTICE_MARGIN = 0.25

@@ -1,17 +1,20 @@
 # Fitzgerald memorial plate
 
 Pierced copper plate (0.020" sheet, 16 × 9.5" oval), or brass from SendCutSend, for Mary Theresa and James Guinn Fitzgerald.
+The surname is in Great Vibes script, and the names and dates in Cinzel. Every letter center and
+script loop is held in the plate by a 0.08" **stencil tie**, so nothing drops out and nothing needs
+gluing back. D and 0 get two ties; every other center gets one.
 Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
 
 ## Files (`out/`)
 
 | File | Use |
 |---|---|
-| `practice.svg` / `.dxf` | Cut this first, on the 13 × 8" sheet |
+| `practice.svg` / `.dxf` | Cut this first, on the 13 × 8" sheet: the whole surname, the knot and most of the names |
 | `final.svg` / `.dxf` | The real plate, on the 18 × 10" sheet |
 | `plate_outline.svg` / `.dxf` | The oval's edge only, for the inlay and tile work |
 | `final_fullsize.pdf` | Print at 100% on 11 × 17" paper and lay it on the slice |
-| `final_sendcutsend.dxf` | The real plate with stencil ties, through-cuts only, for ordering from SendCutSend |
+| `final_sendcutsend.dxf` | The real plate, through-cuts only, for ordering from SendCutSend |
 | `border_engrave.svg` / `.dxf` | The border line only, to engrave on the plate SendCutSend sends back |
 
 ## Carbide Create
@@ -38,11 +41,12 @@ Design: `docs/superpowers/specs/2026-10-11-copper-memorial-plaque-design.md`.
    the bottom, plus a little into the tape.
 5. **Feeds and speeds:** about 18,000 RPM, 10 IPM, 3 IPM plunge, 0.005" per pass, with
    cutting fluid.
-6. **Preview the simulation.** Check that every letter center (in A, D, B, 0, and the small
-   r, p, 6 and 9) stays as an island.
+6. **Preview the simulation.** Check that every tie is left as copper: each letter center (in
+   A, D, B, 0, and the small r, p, 6 and 9) and each loop of the script (z, g, e, d) stays joined
+   to the plate by its strip.
 7. **Hold-down and removal:** keep the sheet fully glued down. Remove it by peeling or with
-   acetone, never by prying. Save the 23 letter centers (19 on the practice piece) and glue
-   them back onto the wood in place.
+   acetone, never by prying. The only pieces that come loose are the cut-out strokes, which are
+   scrap.
 
 ## SendCutSend
 
@@ -51,11 +55,9 @@ Choose **Brass, 0.040"**. The file also passes every minimum for 0.063". The fil
 through-cuts: the oval, the lettering, the knot and the 8 pin holes. A laser cuts every line it's
 sent, so the grey sheet rectangle and the border line are left out.
 
-SendCutSend keeps nothing that falls free. So every letter center (in A, D, B, 0, and the small r,
-p, 6 and 9) is held in the plate by a **stencil tie**: a 0.06" strip of brass left across the
-stroke, where stencil lettering puts it. D and 0 get two ties, every other letter one. The ties
-stay, so there's nothing to glue back. The narrowest brass anywhere is 0.06", three times their
-0.020" minimum for 0.040" brass.
+SendCutSend keeps nothing that falls free. The stencil ties take care of that: nothing in this
+file drops out. The ties are 0.08" and the narrowest brass between cuts is 0.06", three to four
+times their 0.020" minimum for 0.040" brass.
 
 SendCutSend cuts holes to ±0.005". If a #16 pin won't go into a 0.070" hole, run a #50 drill
 through it.

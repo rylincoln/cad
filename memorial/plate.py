@@ -1,4 +1,4 @@
-"""Assemble the final plate, its practice window, and the outline-only plate from the spec."""
+"""Assemble the final plate, its practice window, and the outline-only and border-only plates from the spec."""
 from __future__ import annotations
 
 import math
@@ -11,7 +11,8 @@ from shapely.ops import linemerge
 from memorial import spec
 from memorial.font import Font
 from memorial.knot import knot_cutouts
-from memorial.text import SetLine, set_line
+from memorial.text import SetLine, set_line, set_word
+from memorial.ties import with_ties
 
 
 @dataclass(frozen=True)
@@ -53,9 +54,21 @@ def pin_holes(border: LineString, count: int) -> tuple[tuple[float, float], ...]
     return tuple((p.x, p.y) for p in points)
 
 
-def build_final(font: Font) -> Plate:
-    lines = {key: set_line(font, s.text, s.em, s.tracking_em, s.thicken, spec.MIN_LETTER_GAP, min_slot=spec.MIN_SLOT)
-             for key, s in spec.LINES.items()}
+def _set(font: Font, script: Font, s: spec.LineSpec) -> SetLine:
+    if s.script:
+        return set_word(script, s.text, s.em, s.min_stroke, spec.MIN_COPPER, spec.MIN_SLOT)
+    return set_line(font, s.text, s.em, s.tracking_em, s.thicken, spec.MIN_LETTER_GAP, min_slot=spec.MIN_SLOT)
+
+
+def build_final(font: Font, script: Font | None = None) -> Plate:
+    """The plate as cut: every letter centre and loop tied in, so nothing drops out."""
+    return with_ties(layout_final(font, script), "final")
+
+
+def layout_final(font: Font, script: Font | None = None) -> Plate:
+    """The plate's lettering, knot and holes before tying."""
+    script = script or Font(spec.SCRIPT_FONT_PATH)
+    lines = {key: _set(font, script, s) for key, s in spec.LINES.items()}
     knot = tuple(knot_cutouts(spec.KNOT_HEIGHT, spec.KNOT_CENTER, spec.KNOT_BAND, spec.KNOT_BRIDGE, spec.KNOT_TIP_DEG))
     knot_width = max(p.bounds[2] for p in knot) - min(p.bounds[0] for p in knot)
     column_width = max(lines[key].width for key, s in spec.LINES.items() if s.column)

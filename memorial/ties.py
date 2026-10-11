@@ -6,8 +6,12 @@ from dataclasses import replace
 from shapely.geometry import LineString, MultiPolygon, Point, Polygon
 from shapely.ops import unary_union
 
+from typing import TYPE_CHECKING
+
 from memorial import spec
-from memorial.plate import Plate
+
+if TYPE_CHECKING:  # plate.py ties its lettering with this module
+    from memorial.plate import Plate
 
 SAMPLE_STEP = 0.004  # in, between candidate tie positions along a centre's edge
 OVERSHOOTS = (0.02, 0.035, 0.05)  # in, how far a tie may run past the stroke's edges to clear a tight curve
@@ -103,7 +107,7 @@ def tie_region(region: Polygon | MultiPolygon, ties_per_centre: int, width: floa
     return parts[0] if len(parts) == 1 else MultiPolygon(parts)
 
 
-def with_ties(plate: Plate, name: str, width: float = spec.TIE_WIDTH) -> Plate:
+def with_ties(plate: "Plate", name: str, width: float = spec.TIE_WIDTH) -> "Plate":
     """The same plate with every letter centre tied in place, for a shop that can't return drop-outs."""
     lines = {key: replace(line, glyphs=tuple(tie_region(glyph, 2 if char in spec.TWO_TIE_CHARS else 1, width)
                                              for char, glyph in zip(line.chars, line.glyphs)))

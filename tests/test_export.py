@@ -8,7 +8,6 @@ from shapely.geometry import Polygon
 
 from memorial.export import write_cut_dxf, write_dxf, write_pdf, write_svg
 from memorial.plate import border_only
-from memorial.ties import with_ties
 
 SVG = "{http://www.w3.org/2000/svg}"
 
@@ -48,18 +47,16 @@ def test_dxf_pin_holes_are_eight_circles_of_0_070(final_dxf):
     assert all(c.dxf.radius == pytest.approx(0.035) for c in circles)
 
 
-def test_dxf_writes_every_letter_ring_and_counter_as_its_own_closed_polyline(final_dxf, final):
+def test_dxf_writes_every_cut_as_one_closed_polyline_with_nothing_inside_another(final_dxf, final):
     polys = list(ezdxf.readfile(final_dxf).modelspace().query('LWPOLYLINE[layer=="CUT_INSIDE"]'))
-    assert len(polys) == sum(1 + len(region.interiors) for _, region in final.cutouts)
+    assert len(polys) == len(final.cutouts)
     assert all(p.closed for p in polys)
     for p in polys:
         pts = list(p.get_points("xy"))
         assert all(a != b for a, b in zip(pts, pts[1:] + pts[:1]))  # no zero-length segments
-    # every counter ring lies inside some letter ring, so CAM keeps the island
+    # every letter centre is tied in, so no ring sits inside another and nothing drops out
     rings = [Polygon(list(p.get_points("xy"))) for p in polys]
-    counters = [r for r in rings if any(o is not r and o.contains(r) for o in rings)]
-    # 23: A, D, a, b (two each in the small-cap B) and 0, plus r, p, 6 and 9, whose narrow openings close when thickened
-    assert len(counters) == sum(len(region.interiors) for _, region in final.cutouts) == 23
+    assert not any(a.contains(b) for a in rings for b in rings if a is not b)
 
 
 def test_dxf_passes_cadgens_drawing_checks(final_dxf):
@@ -98,22 +95,17 @@ def test_pdf_is_a_tabloid_landscape_page(tmp_path, final):
 
 
 @pytest.fixture(scope="module")
-def tied(final):
-    return with_ties(final, "final_sendcutsend")
-
-
-@pytest.fixture(scope="module")
-def cut_dxf(tmp_path_factory, tied):
+def cut_dxf(tmp_path_factory, final):
     path = tmp_path_factory.mktemp("cut") / "final_sendcutsend.dxf"
-    write_cut_dxf(tied, path)
+    write_cut_dxf(final, path)
     return path
 
 
-def test_cut_dxf_holds_only_through_cuts(cut_dxf, tied):
+def test_cut_dxf_holds_only_through_cuts(cut_dxf, final):
     # a laser shop cuts every line it is sent: no sheet rectangle, no engraved border
     msp = ezdxf.readfile(cut_dxf).modelspace()
     assert {e.dxf.layer for e in msp} == {"CUT"}
-    assert len(msp.query("LWPOLYLINE")) == 1 + sum(1 + len(region.interiors) for _, region in tied.cutouts)
+    assert len(msp.query("LWPOLYLINE")) == 1 + len(final.cutouts)
     assert len(msp.query("CIRCLE")) == 8
     assert all(p.closed for p in msp.query("LWPOLYLINE"))
 

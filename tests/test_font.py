@@ -9,7 +9,7 @@ ALL_CHARS = sorted(set("".join(line.text for line in spec.LINES.values())) - {" 
 
 def test_text_is_exactly_what_the_family_approved():
     assert [line.text for line in spec.LINES.values()] == [
-        "FITZGERALD", "Mary Theresa", "James Guinn", "Feb 6, 1935", "Apr 19, 1939", "December 30, 2025"]
+        "Fitzgerald", "Mary Theresa", "James Guinn", "Feb 6, 1935", "Apr 19, 1939", "December 30, 2025"]
 
 
 def test_font_file_is_the_pinned_cinzel_bold():

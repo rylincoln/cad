@@ -274,3 +274,24 @@ SendCutSend can't engrave a 16 × 9.5" part (their limit is 12.1 × 12.1") and d
 brass. The user engraves the border on the Shapeoko after delivery from `border_engrave`
 (stock = the plate's own outline, XY zero at the center), lining up on the pin holes.
 The Carbide Create files and the glue-back design are unchanged.
+
+## Revision 4 (script surname, ties on every file)
+
+**The surname** is "Fitzgerald" in Great Vibes script (OFL, pinned by SHA-256 in `fonts/`). The user
+chose it from eight script fonts shown on the plate.
+- It's set as one joined word at a 2.58" em, about 9.8" wide, baseline at y = 1.30".
+- That leaves 0.24" above the names and knot (at least 0.2" required) and 0.37" inside the border.
+- The word is thickened (mitred) just until every stroke is at least **0.065"**, "a bit thicker"
+  than the 0.05" slot rule.
+- The F's crossbar swash tapered to within 0.036" of the t. Its tip is trimmed back 0.025" to leave
+  0.06" of copper.
+
+**Ties** are now **0.08"** (was 0.06"), the widest that fits the small A of "Mary". They're on every
+file, the Carbide Create final and practice included, so nothing drops out on the Shapeoko either.
+There are no letter centers to glue back.
+- That covers 25 centers: 21 in the names and dates, plus the script's z, g, e and d loops.
+- The build checks every plate with no drop-outs allowed.
+
+**The practice window** moves 0.7" right, to x = −7.3 … 5.2 (same 12.5 × 7.5"), so it holds the
+whole script word, which can't be split at a letter. It loses the M of "Mary" and the oval's left
+tip.
