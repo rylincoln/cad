@@ -95,3 +95,10 @@ the border line, so they're used to line the job up.
 tools/py -m pytest projects/fitzgerald-memorial -q   # tests
 tools/py projects/fitzgerald-memorial/build.py       # regenerate out/ (refuses to write if a cutting rule fails)
 ```
+
+## Credits
+
+The lettering is set in [Cinzel](https://github.com/NDISCOVER/Cinzel) by Natanael Gama and
+[Great Vibes](https://github.com/googlefonts/great-vibes) by Robert Leuschke (TypeSETit). Both are
+under the SIL Open Font License 1.1. The fonts, their licences and the libraries this project uses
+are credited in the [repo README](../../README.md#credits).

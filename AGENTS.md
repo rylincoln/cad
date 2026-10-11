@@ -8,6 +8,7 @@ CAD projects for CNC and laser work, written in Python. Each project generates i
 
 - `projects/<name>/`: one self-contained project. See "Starting a project" below.
 - `fonts/`: shared fonts, each with its licence. A project pins the fonts it uses by SHA-256.
+  When you add a font or a library, credit it in the README's Credits section.
 - `tools/py`: the shared Python environment.
 - `README.md`: the index of projects. Add a line when you add a project.
 
