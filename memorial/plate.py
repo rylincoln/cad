@@ -27,9 +27,10 @@ class Plate:
 
     @property
     def cutouts(self) -> list[tuple[str, Polygon]]:
-        """Every cut-through region except the pin holes, labelled for error messages."""
-        regions = [(f"{char!r} in {line.text!r}", glyph)
-                   for line in self.lines.values() for char, glyph in zip(line.chars, line.glyphs)]
+        """Every cut-through region except the pin holes, labelled for error messages (a tied letter gives several)."""
+        regions = [(f"{char!r} in {line.text!r}", part)
+                   for line in self.lines.values() for char, glyph in zip(line.chars, line.glyphs)
+                   for part in getattr(glyph, "geoms", [glyph])]
         regions += [(f"knot piece {i + 1}", piece) for i, piece in enumerate(self.knot)]
         return regions
 
@@ -101,3 +102,10 @@ def build_practice(final: Plate) -> Plate:
 def outline_only(final: Plate) -> Plate:
     """Just the oval's edge, for whoever does the inlay and tile work around the plate."""
     return replace(final, name="plate_outline", border=(), lines={}, knot=(), holes=())
+
+
+def border_only(final: Plate) -> Plate:
+    """The border to engrave on a plate already cut elsewhere: stock is the plate's own 16 x 9.5 outline."""
+    minx, miny, maxx, maxy = final.outline.bounds
+    return replace(final, name="border_engrave", sheet=(maxx - minx, maxy - miny), offset=(-minx, -miny),
+                   lines={}, knot=())

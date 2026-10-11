@@ -7,6 +7,8 @@ from cadgen.drawing_checks import validate_dxf_file
 from shapely.geometry import Polygon
 
 from memorial.export import write_cut_dxf, write_dxf, write_pdf, write_svg
+from memorial.plate import border_only
+from memorial.ties import with_ties
 
 SVG = "{http://www.w3.org/2000/svg}"
 
@@ -96,17 +98,22 @@ def test_pdf_is_a_tabloid_landscape_page(tmp_path, final):
 
 
 @pytest.fixture(scope="module")
-def cut_dxf(tmp_path_factory, final):
+def tied(final):
+    return with_ties(final, "final_sendcutsend")
+
+
+@pytest.fixture(scope="module")
+def cut_dxf(tmp_path_factory, tied):
     path = tmp_path_factory.mktemp("cut") / "final_sendcutsend.dxf"
-    write_cut_dxf(final, path)
+    write_cut_dxf(tied, path)
     return path
 
 
-def test_cut_dxf_holds_only_through_cuts(cut_dxf, final):
+def test_cut_dxf_holds_only_through_cuts(cut_dxf, tied):
     # a laser shop cuts every line it is sent: no sheet rectangle, no engraved border
     msp = ezdxf.readfile(cut_dxf).modelspace()
     assert {e.dxf.layer for e in msp} == {"CUT"}
-    assert len(msp.query("LWPOLYLINE")) == 1 + sum(1 + len(region.interiors) for _, region in final.cutouts)
+    assert len(msp.query("LWPOLYLINE")) == 1 + sum(1 + len(region.interiors) for _, region in tied.cutouts)
     assert len(msp.query("CIRCLE")) == 8
     assert all(p.closed for p in msp.query("LWPOLYLINE"))
 
@@ -120,10 +127,27 @@ def test_cut_dxf_is_the_plate_alone_at_the_origin_in_inches(cut_dxf):
     assert doc.header["$EXTMAX"][:2] == pytest.approx((16.0, 9.5), abs=1e-4)
 
 
-def test_cut_dxf_is_one_part_with_everything_inside_the_oval(cut_dxf):
+def test_cut_dxf_is_one_part_with_nothing_to_drop_out(cut_dxf):
+    # every contour sits directly inside the oval: none inside another, so nothing falls free
     rings = [Polygon(list(p.get_points("xy"))) for p in ezdxf.readfile(cut_dxf).modelspace().query("LWPOLYLINE")]
     outline = max(rings, key=lambda r: r.area)
-    assert all(outline.contains(r) for r in rings if r is not outline)
+    inner = [r for r in rings if r is not outline]
+    assert all(outline.contains(r) for r in inner)
+    assert not any(a.contains(b) for a in inner for b in inner if a is not b)
+
+
+def test_border_engrave_file_has_the_border_and_only_reference_lines(tmp_path, final):
+    path = tmp_path / "border_engrave.dxf"
+    write_dxf(border_only(final), path, reference_cuts=True)
+    msp = ezdxf.readfile(path).modelspace()
+    assert not msp.query('*[layer=="CUT_INSIDE" | layer=="CUT_OUTSIDE"]')
+    border = list(msp.query('LWPOLYLINE[layer=="ENGRAVE_BORDER"]'))
+    assert len(border) == 1 and border[0].closed
+    assert _bounds(border) == pytest.approx((0.375, 0.375, 15.625, 9.125), abs=1e-3)
+    assert _bounds(msp.query('LWPOLYLINE[layer=="REFERENCE_PLATE"]')) == pytest.approx((0.0, 0.0, 16.0, 9.5), abs=1e-4)
+    assert len(msp.query('CIRCLE[layer=="REFERENCE_PLATE"]')) == 8
+    assert _bounds(msp.query('LWPOLYLINE[layer=="REFERENCE_SHEET"]')) == pytest.approx((0.0, 0.0, 16.0, 9.5))
+    assert [f.render() for f in validate_dxf_file(path) if f.severity == "error"] == []
 
 
 def test_cut_dxf_passes_cadgens_drawing_checks(cut_dxf):

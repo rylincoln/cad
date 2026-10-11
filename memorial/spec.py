@@ -57,6 +57,10 @@ KNOT_BRIDGE = 0.08
 KNOT_TIP_DEG = 90.0
 KNOT_SIDE_GAP = 0.24  # between the knot's cut edge and the nearest letter (reproduces the approved preview)
 
+# stencil ties, for a laser shop that can't return drop-outs: strips of plate left across a stroke
+TIE_WIDTH = 0.06        # in: the copper rule, three times SendCutSend's 0.020" bridge minimum for 0.040" brass
+TWO_TIE_CHARS = "D0"    # bowls tied top and bottom, as stencil lettering does; every other centre gets one tie
+
 # sheets
 FINAL_SHEET = (18.0, 10.0)
 PRACTICE_SHEET = (13.0, 8.0)

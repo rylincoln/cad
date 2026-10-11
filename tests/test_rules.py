@@ -74,3 +74,10 @@ def test_a_thin_wall_around_a_letter_centre_is_reported():
     letter = Polygon(box(0, 0, 0.5, 0.5).exterior.coords, [box(0.1, 0.1, 0.48, 0.4).exterior.coords])
     problems = check_plate(_plate([letter]), full_text=True)
     assert any("slot narrower" in p for p in problems)
+
+
+def test_a_letter_centre_is_reported_when_drop_outs_are_not_allowed():
+    letter = Polygon(box(0, 0, 0.5, 0.5).exterior.coords, [box(0.15, 0.15, 0.35, 0.35).exterior.coords])
+    assert check_plate(_plate([letter]), full_text=True) == []
+    problems = check_plate(_plate([letter]), full_text=True, drop_outs=False)
+    assert len(problems) == 1 and "drop out" in problems[0]

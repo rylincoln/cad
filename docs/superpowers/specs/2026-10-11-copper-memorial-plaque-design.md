@@ -255,3 +255,22 @@ a wall vanishing around a letter center, so 12 letters passed. Rule 1 now also r
 every letter center to stay surrounded. Those walls are grown inward to 0.05", which keeps
 80–92% of each center and leaves every outline unchanged. The spec's choice to close these
 loops (23 loose pieces) stands.
+
+## Revision 3 (SendCutSend in brass)
+
+The plate can also be ordered from SendCutSend in 0.040" brass. SendCutSend doesn't return
+pieces that fall free. 21 of the 23 letter centers are also below their 0.375 × 0.25" minimum
+part size, so they can't be ordered as separate parts. The user chose stencil ties:
+- Each letter center stays joined to the plate by a 0.06" strip of brass across the stroke,
+  left at the stroke's thinnest square crossing and centered along it.
+- D and 0 get two ties, top and bottom; every other letter gets one.
+- No tie may leave a scrap of stroke narrower than 0.05".
+
+The laser file (`final_sendcutsend.dxf`) holds only the through-cuts, on one layer, with the
+plate's lower-left corner at the origin. The build checks it with every rule plus one more:
+no letter center is left to drop out.
+
+SendCutSend can't engrave a 16 × 9.5" part (their limit is 12.1 × 12.1") and doesn't etch
+brass. The user engraves the border on the Shapeoko after delivery from `border_engrave`
+(stock = the plate's own outline, XY zero at the center), lining up on the pin holes.
+The Carbide Create files and the glue-back design are unchanged.

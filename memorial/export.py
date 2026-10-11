@@ -18,6 +18,7 @@ from memorial.plate import Plate  # noqa: E402
 
 LAYERS = {  # name: (DXF colour index, SVG stroke colour), in drawing order
     "REFERENCE_SHEET": (8, "#999999"),
+    "REFERENCE_PLATE": (8, "#999999"),
     "ENGRAVE_BORDER": (3, "#00a000"),
     "CUT_INSIDE": (1, "#e00000"),
     "CUT_OUTSIDE": (5, "#0050ff"),
@@ -38,8 +39,19 @@ def _clean(points, closed: bool) -> list[tuple[float, float]]:
     return out
 
 
-def layer_items(plate: Plate) -> list[tuple[str, str, object, bool]]:
-    """(layer, "poly" | "circle", points or centre, closed) for everything on the sheet, in sheet coordinates."""
+def layer_items(plate: Plate, reference_cuts: bool = False) -> list[tuple[str, str, object, bool]]:
+    """(layer, "poly" | "circle", points or centre, closed) for everything on the sheet, in sheet coordinates.
+
+    With `reference_cuts`, the outline and holes are already cut and go on REFERENCE_PLATE, to line up by.
+    """
+    items = _items(plate)
+    if reference_cuts:
+        items = [("REFERENCE_PLATE" if layer.startswith("CUT_") else layer, kind, data, closed)
+                 for layer, kind, data, closed in items]
+    return items
+
+
+def _items(plate: Plate) -> list[tuple[str, str, object, bool]]:
     dx, dy = plate.offset
     w, h = plate.sheet
 
@@ -58,14 +70,16 @@ def layer_items(plate: Plate) -> list[tuple[str, str, object, bool]]:
     return items
 
 
-def write_dxf(plate: Plate, path: Path) -> None:
+def write_dxf(plate: Plate, path: Path, reference_cuts: bool = False) -> None:
     doc = ezdxf.new("R2010", setup=False)
     doc.header["$INSUNITS"] = 1     # inches
     doc.header["$MEASUREMENT"] = 0  # imperial
+    items = layer_items(plate, reference_cuts)
     for name, (aci, _) in LAYERS.items():
-        doc.layers.add(name, color=aci)
+        if any(layer == name for layer, *_ in items):
+            doc.layers.add(name, color=aci)
     msp = doc.modelspace()
-    for layer, kind, data, closed in layer_items(plate):
+    for layer, kind, data, closed in items:
         if kind == "circle":
             msp.add_circle(data, spec.HOLE_DIAMETER / 2, dxfattribs={"layer": layer})
         else:
@@ -97,10 +111,10 @@ def write_cut_dxf(plate: Plate, path: Path) -> None:
     doc.saveas(path)
 
 
-def write_svg(plate: Plate, path: Path) -> None:
+def write_svg(plate: Plate, path: Path, reference_cuts: bool = False) -> None:
     w, h = plate.sheet
     groups: dict[str, list[str]] = {name: [] for name in LAYERS}
-    for layer, kind, data, closed in layer_items(plate):
+    for layer, kind, data, closed in layer_items(plate, reference_cuts):
         if kind == "circle":
             x, y = data
             groups[layer].append(f'<circle cx="{x:.4f}" cy="{h - y:.4f}" r="{spec.HOLE_DIAMETER / 2:.4f}"/>')

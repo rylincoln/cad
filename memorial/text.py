@@ -16,7 +16,7 @@ WALL_MARGIN = 0.005  # in, extra width given to a widened wall beyond the slot r
 class SetLine:
     text: str
     chars: tuple[str, ...]                      # visible characters, in order
-    glyphs: tuple[Polygon, ...]                 # one cut region per visible character, inches
+    glyphs: tuple[Polygon, ...]                 # one cut region per visible character, inches (several once tied)
     width: float                                # ink width, inches
     pushes: tuple[tuple[str, float], ...] = ()  # (character, extra space opened before it)
 

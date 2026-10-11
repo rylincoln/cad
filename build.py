@@ -12,8 +12,9 @@ from cadgen.drawing_checks import validate_dxf_file
 from memorial import spec
 from memorial.export import write_cut_dxf, write_dxf, write_pdf, write_svg
 from memorial.font import Font
-from memorial.plate import Plate, build_final, build_practice, outline_only
+from memorial.plate import Plate, border_only, build_final, build_practice, outline_only
 from memorial.rules import check_plate
+from memorial.ties import with_ties
 
 OUT = Path(__file__).resolve().parent / "out"
 
@@ -40,7 +41,9 @@ def build(out_dir: Path = OUT) -> dict:
     font = Font(spec.FONT_PATH)
     final = build_final(font)
     practice = build_practice(final)
-    problems = {"final": check_plate(final, full_text=True), "practice": check_plate(practice, full_text=False)}
+    laser = with_ties(final, "final_sendcutsend")
+    problems = {"final": check_plate(final, full_text=True), "practice": check_plate(practice, full_text=False),
+                laser.name: check_plate(laser, full_text=True, drop_outs=False)}
     if any(problems.values()):
         raise BuildError(problems)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -51,13 +54,16 @@ def build(out_dir: Path = OUT) -> dict:
         errors = [f.render() for f in validate_dxf_file(dxf) if f.severity == "error"]
         if errors:
             raise BuildError({plate.name: errors})
-    laser = out_dir / "final_sendcutsend.dxf"
-    write_cut_dxf(final, laser)
-    errors = [f.render() for f in validate_dxf_file(laser) if f.severity == "error"]
-    if errors:
-        raise BuildError({laser.stem: errors})
+    border = border_only(final)
+    write_dxf(border, out_dir / f"{border.name}.dxf", reference_cuts=True)
+    write_svg(border, out_dir / f"{border.name}.svg", reference_cuts=True)
+    write_cut_dxf(laser, out_dir / f"{laser.name}.dxf")
+    for name in (border.name, laser.name):
+        errors = [f.render() for f in validate_dxf_file(out_dir / f"{name}.dxf") if f.severity == "error"]
+        if errors:
+            raise BuildError({name: errors})
     write_pdf(final, out_dir / "final_fullsize.pdf")
-    return {"final": summarize(final), "practice": summarize(practice)}
+    return {"final": summarize(final), "practice": summarize(practice), laser.name: summarize(laser)}
 
 
 def main() -> int:
@@ -73,6 +79,8 @@ def main() -> int:
         width, height = info["size_in"]
         print(f"{name}: {width} x {height} in, {info['cutouts']} cutouts, "
               f"{info['loose_pieces']} letter centres to glue back, {info['pin_holes']} pin holes")
+        if name == "final_sendcutsend":
+            continue
         if name == "practice":
             for text, kept in info["kept"].items():
                 print(f"  keeps {kept!r} of {text!r}")

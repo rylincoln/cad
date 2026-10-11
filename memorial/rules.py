@@ -20,7 +20,7 @@ def _count(geom) -> int:
     return 0 if geom.is_empty else len(getattr(geom, "geoms", [geom]))
 
 
-def check_plate(plate: Plate, *, full_text: bool) -> list[str]:
+def check_plate(plate: Plate, *, full_text: bool, drop_outs: bool = True) -> list[str]:
     problems: list[str] = []
     cutouts = plate.cutouts
 
@@ -44,8 +44,11 @@ def check_plate(plate: Plate, *, full_text: bool) -> list[str]:
             if gap < spec.MIN_COPPER - TOLERANCE:
                 problems.append(f"only {gap:.3f}\" of copper between {label} and {other_label}")
 
-    # 3. letter centres that drop out must be big enough to handle and glue back
+    # 3. letter centres that drop out must be big enough to handle and glue back; a laser shop
+    #    keeps nothing that falls free, so for them every centre must stay tied to the plate
     for label, region in cutouts:
+        if region.interiors and not drop_outs:
+            problems.append(f"a letter centre in {label} is not tied to the plate and would drop out")
         for ring in region.interiors:
             if Polygon(ring).buffer(-spec.MIN_ISLAND / 2).is_empty:
                 problems.append(f"letter centre in {label} is under {spec.MIN_ISLAND}\" across")
