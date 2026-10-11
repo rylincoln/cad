@@ -63,3 +63,16 @@ def test_wider_ties_still_fit_the_small_letters(final, width):
     assert check_plate(tied, full_text=True, drop_outs=False) == []
     d = dict(_glyphs(tied, "surname"))["D"]
     assert d.geoms[0].distance(d.geoms[1]) == pytest.approx(width, abs=0.002)
+
+
+def test_a_script_word_in_several_pieces_has_every_loop_tied(final, script_font):
+    from dataclasses import replace
+
+    from memorial.plate import move_line
+    from memorial.text import set_word
+
+    word = move_line(set_word(script_font, "Fitzgerald", em=2.4, min_stroke=0.065), 0, 1.4)
+    assert sum(len(p.interiors) for p in word.glyphs[0].geoms) == 4  # loops of the z, g, e and d
+    tied = with_ties(replace(final, lines={"surname": word}), "script", width=0.08)
+    assert all(not part.interiors for _, part in tied.cutouts)
+    assert check_plate(tied, full_text=True, drop_outs=False) == []

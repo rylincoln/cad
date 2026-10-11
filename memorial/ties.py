@@ -77,10 +77,12 @@ def _apply(region: Polygon, ties: list[Polygon]) -> list[Polygon]:
     return [p for p in getattr(cut, "geoms", [cut]) if p.area >= SLIVER_AREA]
 
 
-def tie_region(region: Polygon, ties_per_centre: int, width: float = spec.TIE_WIDTH) -> Polygon | MultiPolygon:
-    """Leave a tie across the stroke's thinnest square crossing around each centre (a second, if asked for,
-    at least a third of the way round from the first), skipping any spot that would leave a scrap of
-    stroke too narrow to cut."""
+def tie_region(region: Polygon | MultiPolygon, ties_per_centre: int, width: float = spec.TIE_WIDTH) -> Polygon | MultiPolygon:
+    """Leave a tie across the stroke's thinnest square crossing around each centre, in every piece of the
+    region (a second, if asked for, at least a third of the way round from the first), skipping any
+    spot that would leave a scrap of stroke too narrow to cut."""
+    if region.geom_type == "MultiPolygon":
+        return unary_union([tie_region(part, ties_per_centre, width) for part in region.geoms])
     if not region.interiors:
         return region
     ties: list[Polygon] = []
