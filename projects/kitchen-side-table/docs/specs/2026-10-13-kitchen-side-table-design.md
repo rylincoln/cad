@@ -30,6 +30,7 @@ Success means:
 | Machine | Shapeoko Pro XXL (about 33 × 33" work area) with a VFD spindle |
 | Bits | ¼" three-flute end mill, 1" of flute. ¼" two-flute end mill, 1.4" of flute, run with ½" of shank in the collet and 2" sticking out. |
 | Other tools | Biscuit joiner, drill, clamps. No roundover bit. |
+| Dowels | Fluted birch dowel pins, 5/16" × 1½" |
 | CAM | Carbide Create builds the toolpaths |
 
 ## Design decisions
@@ -52,8 +53,12 @@ All approved in the brainstorming session, the shapes on visual mockups.
 - **Joinery:** every joint is a pocket in the one face of each leg that faces into the table, so the
   CNC cuts all of it with the leg lying flat. Side aprons sit in housings; long aprons lap onto the
   legs. All glued; the laps also screwed.
-- **Top attachment:** Z-clip tabletop fasteners in a groove the CNC cuts along each apron, plus a
-  fixed block at the middle of each long apron.
+- **Top attachment:** four glued dowels, two at the middle of each long apron, fix the top along its
+  front-to-back center line. Z-clip tabletop fasteners in grooves the CNC cuts along the aprons hold
+  the rest down and let it move. Across its 32" the cherry grows and shrinks about ⅛–¼" with the
+  seasons; fixed only at the middle, it moves half that each way, and the clips slide. Rejected:
+  glued dowels all around (the user's first idea), which would lock that movement and risk cracking
+  the top.
 - **LVL in one setup, no flip:** the two-flute bit cuts through at full reach, with a clearance pass
   that widens the top of every outline slot so the bit's shank never rubs.
 
@@ -97,6 +102,8 @@ Fixed design values:
 | Fit clearance on the housing width | 0.005 |
 | Sweep drop; left / right corner radius | 2.25; 2.5 / 1.25 |
 | Clip groove: width, depth, upper wall below apron top | 0.25, 0.3125, 0.375 (set from the clips bought) |
+| Dowels: diameter, length; apart, centered on each long apron | 0.3125, 1.5; 2.0 |
+| Dowel hole depth: in the top, in the apron | 0.5, 1.0625 |
 | Bit diameter | 0.25 |
 
 With these values the finished top is 31.75 × 23.75, the legs are 31.25 long and 1.786 thick, the
@@ -131,7 +138,7 @@ from the outer edge (0).
 - **Handedness:** seen from the inside face, the front-left and back-right legs have the flare on
   the right; the front-right and back-left legs are their mirror image.
 
-### Aprons, blocks and coupon (`aprons.py`)
+### Aprons and coupon (`aprons.py`)
 
 All plywood parts are 3.0 tall and as thick as the plywood.
 
@@ -141,8 +148,9 @@ All plywood parts are 3.0 tall and as thick as the plywood.
   15.18 with the measured LVL.
 - **Clip groove** along each apron's inside face, centered 0.5 below its top edge. It stops 0.5 short
   of the part of the apron that goes into a leg (0.5 + lap or housing depth from each end).
-- **Center blocks:** two, 2 × 1.75. Each is glued to the inside face of a long apron at its middle,
-  top flush, and screwed up into the top from below through a counterbored hole.
+- **Dowel holes:** two in the top edge of each long apron, centered on its thickness, 1.0 either side
+  of its middle, 1.0625 deep. They reach down through the groove's height, so each long apron's
+  groove stops 0.5 short of them and becomes two grooves. The side aprons have one groove each.
 - **Fit-test coupon:** 3 × 1.75.
 
 ### Frame (`frame.py`)
@@ -160,7 +168,7 @@ This module places every part in table coordinates.
 
 | Sheet | Stock | Face up | Layout |
 |---|---|---|---|
-| Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon and both blocks (1.75 tall) go in the 1.875" strip left over. |
+| Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon (1.75 tall) goes in the 1.875" strip left over. |
 | Job 2: fit test | Any scrap ≥ 1" thick, about 6 × 4 | — | One housing pocket and one lap pocket, as cut in the legs, each long enough for the coupon's 1.75" side. |
 | Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. About 0.28" of the measured 11.75" width is spare. |
 | Job 4: top | Cherry glue-up | The top's show face, front (curved) edge toward the operator | The outline 0.125 inside the glue-up on every side. The shallow end is at the left. |
@@ -190,7 +198,11 @@ assembled. The build writes nothing if it isn't empty.
    length.
 8. **The shallow end is on the left.** It is at the left of the table as seen from the room, and at
    the left of the job 4 sheet as the operator sees it. This guards against mirroring the top.
-9. **The grooves stay out of the joints.** No clip groove reaches into a housing or lap region.
+9. **The grooves stay out of the joints.** No clip groove reaches into a housing or lap region, or
+   comes within 0.5 of a dowel hole.
+10. **The dowels fit.** Each hole in the top leaves at least 0.25 of cherry above it. The two hole
+   depths add up to at least the dowel's length + 1/32, for glue. Each apron hole leaves at least
+   0.15 of plywood on either side.
 
 ## Files and layers (`export.py`, `build.py`)
 
@@ -199,7 +211,7 @@ is validated with `cadgen.drawing_checks.validate_dxf_file`. The SVGs match the 
 
 | File | Job |
 |---|---|
-| `aprons.svg` / `.dxf` | 1: plywood aprons, blocks, coupon |
+| `aprons.svg` / `.dxf` | 1: plywood aprons and coupon |
 | `fit_test.svg` / `.dxf` | 2: test pockets in scrap |
 | `legs.svg` / `.dxf` | 3: LVL legs |
 | `top.svg` / `.dxf` | 4: cherry top |
@@ -244,12 +256,18 @@ Starting settings; tune by sound and chip.
    the coupon doesn't slide in snug by hand. Mark each leg's name on it in pencil as it comes off.
 3. **Dry-fit the base.**
 4. **Glue the end frames:** each end's front leg, back leg and side apron. Check they're square.
-5. **Glue the long aprons into their laps**, with two screws each from inside. Glue on the center
-   blocks.
+5. **Drill the long aprons' dowel holes**, before they go in: two per apron in the top edge, 5/16",
+   1.0 either side of the middle, centered on the plywood, 1-1/16" deep. A doweling jig keeps them
+   square. Then **glue the long aprons into their laps**, with two screws each from inside.
 6. **Finish:** ease every edge by sanding. Seal the cherry's end-grain front edge before finishing
-   so it doesn't darken more than the face.
-7. **Attach the top.** Lay it upside down and center the base on it. Fit eight Z-clips (two per
-   apron, buy a pack of ten) with ⅝" screws, and screw the two center blocks up into the top.
+   so it doesn't darken more than the face. Finish the top's underside as well as its show face.
+   Keep finish out of the dowel holes and off the 2" of apron edge between them.
+7. **Attach the top.** Lay it upside down. Put dowel centers in the four apron holes, set the base
+   upside down on the top in its place (legs' outer faces 1" in from each end, back legs' back faces
+   3" from the back edge), and press to mark the top. Drill the four marks 5/16" × ½" deep, with a
+   stop collar so it can't go through. Glue the dowels in, with glue only in the holes and on the 2"
+   of apron edge between them; glue anywhere else would lock the top. Fit eight Z-clips (one per
+   groove on the long aprons, two per side apron; buy a pack of ten) with ⅝" screws.
 
 ## Verification before handoff
 
@@ -257,7 +275,8 @@ Starting settings; tune by sound and chip.
 - `build.py` runs clean with the nominal values, and `check_table` returns `[]`.
 - Every DXF passes cadgen's validator and opens with its layers.
 - The previews and the 3D model have been looked at: the sweep's shallow end is on the left from the
-  room, the flare faces the room, and the aprons sit in their pockets.
+  room, the flare faces the room, the aprons sit in their pockets, and the dowels sit at the middle
+  of the long aprons.
 - The README's settings, depths and layer names match the files.
 
 ## Out of scope
@@ -275,7 +294,16 @@ Starting settings; tune by sound and chip.
 - **Collet-nut clearance** is about 0.19" at full depth with the 1.786" LVL, so the LVL must lie flat,
   the tape be thin, and the stickout be a full 2". Check it with the spindle off before the first
   full-depth pass.
+- **Seasonal movement:** the top still moves ⅛–¼" across its width, half each way from the dowels.
+  Let the boards sit in the loft for a week or two before the glue-up, keep glue off the apron edges
+  away from the dowels, and finish the underside like the top so it takes up moisture evenly.
 - **Glue-up smaller than nominal:** everything rescales from the measured block, and the rules catch
   any part that no longer fits.
 - **Plywood thicker or thinner than ¾":** the housings, laps and coupon all follow the measured
   thickness.
+
+## Revisions
+
+- **2026-10-13:** the top is attached with four glued dowels at the middle of the long aprons
+  instead of two screwed center blocks, at the user's request. The long aprons' grooves split around
+  the dowels. Rules 9 and 10 cover them.
