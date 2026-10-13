@@ -65,13 +65,15 @@ All approved in the brainstorming session, the shapes on visual mockups.
 ## Units and coordinates
 
 Inches throughout. **Table coordinates**, used to design and check the assembly: x along the length
-from the left end as seen from the room, y from the wall toward the room, z up from the floor.
-"Left" and "right" always mean as seen from the room.
+from the left end as seen from the room; y from the front toward the wall, with y = 0 at the front
+edge's deepest point and y = D along the back edge; z up from the floor. The frame is right-handed,
+so a plan drawn with y up is the table seen from above, with the wall at the top. "Left" and
+"right" always mean as seen from the room.
 
 **Sheet coordinates**, used in the cut files: origin at the lower-left corner of the stock as it sits
 on the Shapeoko, x to the right, y away from the operator, seen from above. Parts go onto sheets by
-rotation and translation only. Nothing is mirrored by accident; the one face-down choice per part is
-stated below and tested.
+rotation and translation only, never mirrored: the face that's up on the machine is the face seen
+from above. Which face goes up is stated for each part below and tested.
 
 ## Inputs (`spec.py`)
 
@@ -115,8 +117,9 @@ housings are 0.728 wide, and the laps are 0.723 deep.
 
 - Finished size W × D = glue-up − 2 × trim in each direction. The back edge and both ends are
   straight; the back corners are square.
-- **Front edge (the sweep):** depth(x) = D − 2.25 + 2.25 · sin(π/2 · min(x / (0.82 W), 1)). That is
-  D − 2.25 at the left end, rising to D at 82% of the way along and flat from there.
+- **Front edge (the sweep):** y(x) = 2.25 · (1 − sin(π/2 · min(x / (0.82 W), 1))). That is 2.25
+  behind the deepest point at the left end, coming forward to the deepest point (y = 0) at 82% of
+  the way along and straight from there.
 - **Front corners:** filleted, 2.5 on the left and 1.25 on the right.
 - Nominal result: 21.5 deep at the left end, 23.75 at the right.
 
@@ -136,7 +139,8 @@ from the outer edge (0).
 - **Dogbones:** a circle of the bit's radius whose edge passes through the corner, centered on the
   corner's bisector, so a ¼" bit leaves the corner square enough for the plywood's square corners.
 - **Handedness:** seen from the inside face, the front-left and back-right legs have the flare on
-  the right; the front-right and back-left legs are their mirror image.
+  the left; the front-right and back-left legs are their mirror image. (Standing behind the table,
+  looking at the front-left leg's inside face, the table's middle is to your left.)
 
 ### Aprons and coupon (`aprons.py`)
 
@@ -157,10 +161,12 @@ All plywood parts are 3.0 tall and as thick as the plywood.
 
 This module places every part in table coordinates.
 
-- **Legs:** outer faces 1.0 in from each end. Back legs from y = 3.0 to 4.75; front legs with their
-  front face at y = D − 3.5. Each leg's inside face faces the middle of the table.
-- **Long aprons:** set into the laps, flush with the legs' inside faces. Front apron from y = (front
-  face − 1.75) to + plywood thickness; back apron from y = 4.75 − plywood thickness to 4.75.
+- **Legs:** outer faces 1.0 in from each end. With t the leg thickness, front legs from y = 3.5 to
+  3.5 + t, and back legs from y = D − 3.0 − t to D − 3.0. Each leg's inside face faces the middle
+  of the table.
+- **Long aprons:** set into the laps, flush with the legs' inside faces. Front apron from
+  y = 3.5 + t − plywood thickness to 3.5 + t; back apron from y = D − 3.0 − t to that + plywood
+  thickness.
 - **Side aprons:** outer face 1.375 in from each end of the top.
 - **Heights:** apron tops flush with the leg tops, and both against the underside of the top.
 
@@ -179,7 +185,8 @@ This module places every part in table coordinates.
 assembled. The build writes nothing if it isn't empty.
 
 1. **Every part fits its stock.** Each part lies inside the stock with the edge margin, and parts are
-   at least the sheet's gap apart (0.25 on the plywood, 0.4 on the LVL).
+   at least the sheet's gap apart (0.25 on the plywood, 0.4 on the LVL). Every stock fits the
+   machine's 33 × 33 work area.
 2. **The bit can cut every pocket.** Each pocket equals itself opened by the bit's radius, so there
    is no corner the ¼" bit can't reach. Each pocket also contains the plywood end it receives: a
    full rectangle of the plywood's thickness by 3.0, or 1.75 for the test pocket.
@@ -260,7 +267,8 @@ Starting settings; tune by sound and chip.
    1.0 either side of the middle, centered on the plywood, 1-1/16" deep. A doweling jig keeps them
    square. Then **glue the long aprons into their laps**, with two screws each from inside.
 6. **Finish:** ease every edge by sanding. Seal the cherry's end-grain front edge before finishing
-   so it doesn't darken more than the face. Finish the top's underside as well as its show face.
+   so it doesn't darken more than the face. Polyurethane on every face, the top's underside as
+   well as its show face, so both sides take up moisture alike and the top stays flat.
    Keep finish out of the dowel holes and off the 2" of apron edge between them.
 7. **Attach the top.** Lay it upside down. Put dowel centers in the four apron holes, set the base
    upside down on the top in its place (legs' outer faces 1" in from each end, back legs' back faces
@@ -307,3 +315,6 @@ Starting settings; tune by sound and chip.
 - **2026-10-13:** the top is attached with four glued dowels at the middle of the long aprons
   instead of two screwed center blocks, at the user's request. The long aprons' grooves split around
   the dowels. Rules 9 and 10 cover them.
+- **2026-10-13 (planning):** table coordinates are right-handed, with y from the front edge toward
+  the wall, so plans, sheets and the 3D model are never mirrored; the leg handedness is corrected to
+  match; rule 1 also checks the machine's work area; the finish is polyurethane on every face.
