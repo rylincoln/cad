@@ -6,6 +6,7 @@ keeps everything in its own folder: code, tests, docs, and the files to cut in `
 | Project | What it is |
 |---|---|
 | [`fitzgerald-memorial`](projects/fitzgerald-memorial/README.md) | Pierced copper or brass memorial plate, a 16 × 9.5" oval, for Mary Theresa and James Guinn Fitzgerald |
+| [`kitchen-side-table`](projects/kitchen-side-table/README.md) | A 32" kitchen side table: flared LVL legs, plywood aprons and a cherry top with a swept front edge |
 
 Run everything from the repo root through `tools/py`, the shared Python environment (the pinned
 cadgen environment from [text-to-cad](https://www.texttocad.dev)):
@@ -38,5 +39,7 @@ to each font:
 - [shapely](https://github.com/shapely/shapely), BSD-3-Clause: all the 2D geometry.
 - [fontTools](https://github.com/fonttools/fonttools), MIT: glyph outlines and kerning.
 - [ezdxf](https://github.com/mozman/ezdxf), MIT: reading and writing DXF.
-- [matplotlib](https://matplotlib.org), Matplotlib licence (PSF-based): the 1:1 PDF prints.
+- [build123d](https://github.com/gumyr/build123d), Apache-2.0: the table's 3D model.
+- [matplotlib](https://matplotlib.org), Matplotlib licence (PSF-based): the 1:1 PDF prints and the
+  table's previews.
 - [NumPy](https://numpy.org), BSD-3-Clause, and [pytest](https://pytest.org), MIT.
