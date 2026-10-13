@@ -70,16 +70,16 @@ stated below and tested.
 
 ## Inputs (`spec.py`)
 
-`spec.py` holds every number. A **measured** block holds the real stock, entered by the user after
-the glue-up and before any cutting. Everything else derives from it. Until it is filled in, the
-build uses these nominal values and prints a warning that the sizes are not measured:
+`spec.py` holds every number. A **measured** block holds the real stock and bit, each value marked
+measured or nominal. Everything else derives from it. While any value is still nominal, the build
+prints a warning naming it. The top can only be measured after the glue-up.
 
-| Measured value | Nominal |
+| Value | Measured (2026-10-13) or nominal |
 |---|---|
-| Top glue-up width × depth × thickness | 32 × 24 × 0.75 |
-| LVL length × width × thickness | 32 × 11.875 × 1.75 |
-| Plywood length × width × thickness | 32 × 12 × 0.75 |
-| Two-flute bit: flute length, stickout | 1.5, 2.0 |
+| Top glue-up width × depth × thickness | nominal 32 × 24 × 0.75 |
+| LVL length × width × thickness | **measured** 32.5 × 11.75 × 1.786 |
+| Plywood length × width × thickness | **measured** 32 × 11.875 × 0.723 |
+| Two-flute bit: flute length, stickout | nominal 1.5, 2.0 |
 
 Fixed design values:
 
@@ -99,7 +99,8 @@ Fixed design values:
 | Clip groove: width, depth, upper wall below apron top | 0.25, 0.3125, 0.375 (set from the clips bought) |
 | Bit diameter | 0.25 |
 
-With the nominal values the finished top is 31.75 × 23.75 and the legs are 31.25 long.
+With these values the finished top is 31.75 × 23.75, the legs are 31.25 long and 1.786 thick, the
+housings are 0.728 wide, and the laps are 0.723 deep.
 
 ## Geometry
 
@@ -137,7 +138,7 @@ All plywood parts are 3.0 tall and as thick as the plywood.
 - **Long aprons (front, back):** length W − 2 × (1.0 + 3.25 − 1.75). Nominal 26.75.
 - **Side aprons (left, right):** they span between the legs' inside faces and run 0.75 into each
   housing. Length = (front-leg front face − back-leg back face) − 2 × leg thickness + 2 × 0.75.
-  Nominal 15.25.
+  15.18 with the measured LVL.
 - **Clip groove** along each apron's inside face, centered 0.5 below its top edge. It stops 0.5 short
   of the part of the apron that goes into a leg (0.5 + lap or housing depth from each end).
 - **Center blocks:** two, 2 × 1.75. Each is glued to the inside face of a long apron at its middle,
@@ -159,9 +160,9 @@ This module places every part in table coordinates.
 
 | Sheet | Stock | Face up | Layout |
 |---|---|---|---|
-| Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon and both blocks (1.75 tall) go in the 2" strip left over. |
+| Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon and both blocks (1.75 tall) go in the 1.875" strip left over. |
 | Job 2: fit test | Any scrap ≥ 1" thick, about 6 × 4 | — | One housing pocket and one lap pocket, as cut in the legs, each long enough for the coupon's 1.75" side. |
-| Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. |
+| Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. About 0.28" of the measured 11.75" width is spare. |
 | Job 4: top | Cherry glue-up | The top's show face, front (curved) edge toward the operator | The outline 0.125 inside the glue-up on every side. The shallow end is at the left. |
 
 ## Rules (`rules.py`, enforced by the build)
@@ -210,7 +211,7 @@ is validated with `cadgen.drawing_checks.validate_dxf_file`. The SVGs match the 
 | `POCKET_HOUSING` | orange | Pocket, ¾" deep |
 | `POCKET_LAP` | yellow | Pocket, as deep as the plywood is thick |
 | `GROOVE` | red | The groove's centerline. Contour, no offset, 5/16" deep. |
-| `CLEARANCE` | cyan | The leg outline offset 0.125 outward. Contour, outside, ⅜" deep. |
+| `CLEARANCE` | cyan | The leg outline offset 0.125 outward. Contour, outside, to the depth rule 6 sets (0.41" with the measured LVL). |
 | `ROUGH` | magenta | The outline offset 0.02 outward. Contour, outside, full depth. |
 | `CUT_OUTSIDE` | blue | The part outline. Contour, outside, full depth. On the LVL it is two passes: to 1.4", then from 1.4" to full depth. |
 
@@ -269,7 +270,9 @@ Starting settings; tune by sound and chip.
 - **Collet grip:** ½" of a ¼" shank in the collet is less than the usual ¾". An upcut bit can pull
   out under load. The mitigations are the marker line, a clean and properly tightened collet, and
   light passes.
-- **Collet-nut clearance** is about 0.23" at full depth, so the LVL must lie flat and the tape be thin.
+- **Collet-nut clearance** is about 0.19" at full depth with the 1.786" LVL, so the LVL must lie flat,
+  the tape be thin, and the stickout be a full 2". Check it with the spindle off before the first
+  full-depth pass.
 - **Glue-up smaller than nominal:** everything rescales from the measured block, and the rules catch
   any part that no longer fits.
 - **Plywood thicker or thinner than ¾":** the housings, laps and coupon all follow the measured
