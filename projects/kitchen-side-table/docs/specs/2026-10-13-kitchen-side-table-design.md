@@ -79,7 +79,7 @@ prints a warning naming it. The top can only be measured after the glue-up.
 | Top glue-up width × depth × thickness | nominal 32 × 24 × 0.75 |
 | LVL length × width × thickness | **measured** 32.5 × 11.75 × 1.786 |
 | Plywood length × width × thickness | **measured** 32 × 11.875 × 0.723 |
-| Two-flute bit: flute length, stickout | nominal 1.5, 2.0 |
+| Two-flute bit: flute length, stickout | **measured** 1.4; stickout 2.0 as the user sets it |
 
 Fixed design values:
 
@@ -183,6 +183,7 @@ assembled. The build writes nothing if it isn't empty.
    empty table also needs at least 50 lb pressing down there to tip forward. That figure uses each
    part's volume and the densities cherry 35, LVL 38 and plywood 43 lb/ft³. Nominal: about 60 lb.
 6. **The shank never rubs.** The clearance pass is at least (full depth − flute length) + 0.1 deep,
+   the first finishing stage stops at flute length − 0.1 so the flutes finish the top of the edge,
    and the collet nut clears the top of the LVL by at least 0.15 at full depth. Full depth is the
    LVL's thickness + 0.02.
 7. **The height is right.** Leg length + top thickness = 32.0 ± 1/32, and all four legs are the same
@@ -211,9 +212,9 @@ is validated with `cadgen.drawing_checks.validate_dxf_file`. The SVGs match the 
 | `POCKET_HOUSING` | orange | Pocket, ¾" deep |
 | `POCKET_LAP` | yellow | Pocket, as deep as the plywood is thick |
 | `GROOVE` | red | The groove's centerline. Contour, no offset, 5/16" deep. |
-| `CLEARANCE` | cyan | The leg outline offset 0.125 outward. Contour, outside, to the depth rule 6 sets (0.41" with the measured LVL). |
+| `CLEARANCE` | cyan | The leg outline offset 0.125 outward. Contour, outside, to the depth rule 6 sets (0.51" with the measured LVL and bit). |
 | `ROUGH` | magenta | The outline offset 0.02 outward. Contour, outside, full depth. |
-| `CUT_OUTSIDE` | blue | The part outline. Contour, outside, full depth. On the LVL it is two passes: to 1.4", then from 1.4" to full depth. |
+| `CUT_OUTSIDE` | blue | The part outline. Contour, outside, full depth. On the LVL it is two passes: to the flute length − 0.1 (1.3"), then from there to full depth. |
 
 The part names appear only in the previews, not in the cut files.
 
