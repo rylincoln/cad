@@ -87,6 +87,7 @@ prints a warning naming it. The top's width and depth can only be measured after
 | LVL length × width × thickness | **measured** 32.5 × 11.75 × 1.786 |
 | Plywood length × width × thickness | **measured** 32 × 11.875 × 0.723 |
 | Two-flute bit: flute length, stickout | **measured** 1.4; stickout 2.0 as the user sets it |
+| Three-flute bit: flute length | 1.0, from the user |
 
 Fixed design values:
 
@@ -105,7 +106,7 @@ Fixed design values:
 | Sweep drop; left / right corner radius | 2.25; 2.5 / 1.25 |
 | Clip groove: width, depth, upper wall below apron top | 0.25, 0.3125, 0.375 (set from the clips bought) |
 | Dowels: diameter, length; apart, centered on each long apron | 0.3125, 1.5; 2.0 |
-| Dowel hole depth: in the top, in the apron | 0.5, 1.0625 |
+| Dowel holes: cherry left above the top's hole; how much deeper the two holes are than the dowel is long, for glue | 0.25; 1/16. Nominal holes: 0.5 into the top, 1.0625 into the apron |
 | Bit diameter | 0.25 |
 
 With these values the finished top is 31.75 × 23.75, the legs are 31.25 long and 1.786 thick, the
@@ -153,7 +154,7 @@ All plywood parts are 3.0 tall and as thick as the plywood.
 - **Clip groove** along each apron's inside face, centered 0.5 below its top edge. It stops 0.5 short
   of the part of the apron that goes into a leg (0.5 + lap or housing depth from each end).
 - **Dowel holes:** two in the top edge of each long apron, centered on its thickness, 1.0 either side
-  of its middle, 1.0625 deep. They reach down through the groove's height, so each long apron's
+  of its middle, 1.0625 deep nominal. They reach down through the groove's height, so each long apron's
   groove stops 0.5 short of them and becomes two grooves. The side aprons have one groove each.
 - **Fit-test coupon:** 3 × 1.75.
 
@@ -176,7 +177,7 @@ This module places every part in table coordinates.
 |---|---|---|---|
 | Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon (1.75 tall) goes in the 1.875" strip left over. |
 | Job 2: fit test | Any scrap ≥ 1" thick, about 6 × 4 | — | One housing pocket and one lap pocket, as cut in the legs, each long enough for the coupon's 1.75" side. |
-| Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. About 0.28" of the measured 11.75" width is spare. |
+| Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. About 0.3" of the measured 11.75" width is spare. |
 | Job 4: top | Cherry glue-up | The top's show face, front (curved) edge toward the operator | The outline 0.125 inside the glue-up on every side. The shallow end is at the left. |
 
 ## Rules (`rules.py`, enforced by the build)
@@ -187,16 +188,17 @@ assembled. The build writes nothing if it isn't empty.
 1. **Every part fits its stock.** Each part lies inside the stock with the edge margin, and parts are
    at least the sheet's gap apart (0.25 on the plywood, 0.4 on the LVL). Every stock fits the
    machine's 33 × 33 work area.
-2. **The bit can cut every pocket.** Each pocket equals itself opened by the bit's radius, so there
-   is no corner the ¼" bit can't reach. Each pocket also contains the plywood end it receives: a
-   full rectangle of the plywood's thickness by 3.0, or 1.75 for the test pocket.
-3. **Joints fit.** The housing width is the plywood's thickness plus the clearance. The lap depth is
-   the plywood's thickness. Every pocket is shallower than the shortest flute.
+2. **The bit can cut every pocket.** Within the part, each pocket equals itself opened by the bit's
+   radius, so there is no corner the ¼" bit can't reach. Each fit-test pocket takes the coupon.
+3. **Joints fit, as assembled.** Each apron, where it's placed, enters a leg only inside a pocket and
+   no deeper than that pocket; each leg holds two aprons; no two aprons run into each other. Every
+   cut is no deeper than the flute of the bit that makes it: 1.0 for the plywood, fit test and
+   top, 1.4 for the LVL's pockets.
 4. **The top covers the legs.** Seen from above, every leg's top is at least 0.5 inside the top's
    outline.
 5. **It won't tip.** The deepest point of the front edge is at most 3.5 past the front legs. The
    empty table also needs at least 50 lb pressing down there to tip forward. That figure uses each
-   part's volume and the densities cherry 35, LVL 38 and plywood 43 lb/ft³. Nominal: about 60 lb.
+   part's volume and the densities cherry 35, LVL 38 and plywood 43 lb/ft³. Nominal: about 64 lb.
 6. **The shank never rubs.** The clearance pass is at least (full depth − flute length) + 0.1 deep,
    the first finishing stage stops at flute length − 0.1 so the flutes finish the top of the edge,
    and the collet nut clears the top of the LVL by at least 0.15 at full depth. Full depth is the
@@ -207,9 +209,10 @@ assembled. The build writes nothing if it isn't empty.
    the left of the job 4 sheet as the operator sees it. This guards against mirroring the top.
 9. **The grooves stay out of the joints.** No clip groove reaches into a housing or lap region, or
    comes within 0.5 of a dowel hole.
-10. **The dowels fit.** Each hole in the top leaves at least 0.25 of cherry above it. The two hole
-   depths add up to at least the dowel's length + 1/32, for glue. Each apron hole leaves at least
-   0.15 of plywood on either side.
+10. **The dowels fit.** The hole in the top leaves 0.25 of cherry above it, so it follows the
+   measured thickness, and the apron's hole takes the rest of the dowel plus 1/16 for glue. At least
+   ⅜ of each dowel must go into the top, and each apron hole leaves at least 0.15 of plywood on
+   either side.
 
 ## Files and layers (`export.py`, `build.py`)
 
@@ -230,7 +233,7 @@ is validated with `cadgen.drawing_checks.validate_dxf_file`. The SVGs match the 
 | `REFERENCE_STOCK` | grey | None. The stock's outline, for lining up. |
 | `POCKET_HOUSING` | orange | Pocket, ¾" deep |
 | `POCKET_LAP` | yellow | Pocket, as deep as the plywood is thick |
-| `GROOVE` | red | The groove's centerline. Contour, no offset, 5/16" deep. |
+| `GROOVE_CENTERLINE` | red | The groove's centerline, an open line. Contour, no offset, 5/16" deep. (cadgen's DXF check allows open lines only on layers it reads as not cut-through; "centerline" is one.) |
 | `CLEARANCE` | cyan | The leg outline offset 0.125 outward. Contour, outside, to the depth rule 6 sets (0.51" with the measured LVL and bit). |
 | `ROUGH` | magenta | The outline offset 0.02 outward. Contour, outside, full depth. |
 | `CUT_OUTSIDE` | blue | The part outline. Contour, outside, full depth. On the LVL it is two passes: to the flute length − 0.1 (1.3"), then from there to full depth. |
@@ -264,7 +267,7 @@ Starting settings; tune by sound and chip.
 3. **Dry-fit the base.**
 4. **Glue the end frames:** each end's front leg, back leg and side apron. Check they're square.
 5. **Drill the long aprons' dowel holes**, before they go in: two per apron in the top edge, 5/16",
-   1.0 either side of the middle, centered on the plywood, 1-1/16" deep. A doweling jig keeps them
+   1.0 either side of the middle, centered on the plywood, 1-1/16" deep (the build prints the depth). A doweling jig keeps them
    square. Then **glue the long aprons into their laps**, with two screws each from inside.
 6. **Finish:** ease every edge by sanding. Seal the cherry's end-grain front edge before finishing
    so it doesn't darken more than the face. Polyurethane on every face, the top's underside as
@@ -272,7 +275,7 @@ Starting settings; tune by sound and chip.
    Keep finish out of the dowel holes and off the 2" of apron edge between them.
 7. **Attach the top.** Lay it upside down. Put dowel centers in the four apron holes, set the base
    upside down on the top in its place (legs' outer faces 1" in from each end, back legs' back faces
-   3" from the back edge), and press to mark the top. Drill the four marks 5/16" × ½" deep, with a
+   3" from the back edge), and press to mark the top. Drill the four marks 5/16" × ½" deep (as printed by the build), with a
    stop collar so it can't go through. Glue the dowels in, with glue only in the holes and on the 2"
    of apron edge between them; glue anywhere else would lock the top. Fit eight Z-clips (one per
    groove on the long aprons, two per side apron; buy a pack of ten) with ⅝" screws.
@@ -318,3 +321,6 @@ Starting settings; tune by sound and chip.
 - **2026-10-13 (planning):** table coordinates are right-handed, with y from the front edge toward
   the wall, so plans, sheets and the 3D model are never mirrored; the leg handedness is corrected to
   match; rule 1 also checks the machine's work area; the finish is polyurethane on every face.
+- **2026-10-13 (planning, prototype):** the groove layer is `GROOVE_CENTERLINE`; the dowel holes'
+  depths follow the measured top; rules 2, 3 and 10 are restated as the prototype checks them; the
+  tipping figure is about 64 lb.
