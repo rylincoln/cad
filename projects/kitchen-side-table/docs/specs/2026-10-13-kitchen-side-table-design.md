@@ -1,7 +1,7 @@
 # Kitchen Side Table: Design
 
 Date: 2026-10-13
-Status: approved in brainstorming, awaiting review of this written spec
+Status: approved
 
 ## Intent
 
@@ -22,13 +22,13 @@ Success means:
 
 | Item | Value |
 |---|---|
-| Top | Four cherry boards, 24 × 8 × ~¾", biscuited and glued edge to edge into a ~32 × 24" panel. The grain runs front to back. |
+| Top | Four cherry boards of finished (surfaced) stock, 24 × 8 × ¾", biscuited and glued edge to edge into a panel close to 32 × 24". The grain runs front to back. Sanding barely changes the thickness. |
 | Legs | One LVL board, 1¾ × ~11⅞ × 32". The veneers run along its length. |
 | Aprons | One piece of good plywood, 32 × 12 × ¾" (nominal) |
 | Not allowed | Buying more LVL; anchoring the table to the wall |
 | Height | About 32" |
 | Machine | Shapeoko Pro XXL (about 33 × 33" work area) with a VFD spindle |
-| Bits | ¼" three-flute end mill, 1" of flute. ¼" two-flute end mill, ~1½" of flute, run with ½" of shank in the collet and 2" sticking out. |
+| Bits | ¼" three-flute end mill, 1" of flute. ¼" two-flute end mill, 1.4" of flute, run with ½" of shank in the collet and 2" sticking out. |
 | Other tools | Biscuit joiner, drill, clamps. No roundover bit. |
 | CAM | Carbide Create builds the toolpaths |
 
@@ -72,11 +72,11 @@ stated below and tested.
 
 `spec.py` holds every number. A **measured** block holds the real stock and bit, each value marked
 measured or nominal. Everything else derives from it. While any value is still nominal, the build
-prints a warning naming it. The top can only be measured after the glue-up.
+prints a warning naming it. The top's width and depth can only be measured after the glue-up.
 
 | Value | Measured (2026-10-13) or nominal |
 |---|---|
-| Top glue-up width × depth × thickness | nominal 32 × 24 × 0.75 |
+| Top glue-up width × depth × thickness | nominal 32 × 24; thickness **0.75** from the finished stock |
 | LVL length × width × thickness | **measured** 32.5 × 11.75 × 1.786 |
 | Plywood length × width × thickness | **measured** 32 × 11.875 × 0.723 |
 | Two-flute bit: flute length, stickout | **measured** 1.4; stickout 2.0 as the user sets it |
@@ -237,8 +237,9 @@ Starting settings; tune by sound and chip.
 ## Assembly (README)
 
 1. **Glue up the top.** Arrange the boards and mark the front ends. Keep the biscuits between 2" and
-   19" from the back ends so the cut doesn't expose them. Flatten the panel, then measure it and
-   enter the measured block in `spec.py`, along with the LVL and plywood. Rebuild.
+   19" from the back ends so the cut doesn't expose them. Sand the panel smooth (the boards are finished
+   stock, so it needs no flattening), then measure its width and depth, enter them in `spec.py` and
+   rebuild.
 2. **Cut jobs 1 to 4.** Run the fit test before the LVL, adjusting the clearance and rebuilding if
    the coupon doesn't slide in snug by hand. Mark each leg's name on it in pencil as it comes off.
 3. **Dry-fit the base.**
