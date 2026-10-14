@@ -148,6 +148,9 @@ def _shank_clear() -> list[str]:
         problems.append(f"the clearance pass ({depths['clearance']:.3f}\") reaches below the first finishing stage")
     if spec.CLEARANCE_OFFSET > spec.ROUGH_OFFSET + spec.BIT_DIAMETER + TOL:
         problems.append("the clearance pass leaves a ridge between itself and the rough pass")
+    reach = spec.CLEARANCE_OFFSET + spec.BIT_DIAMETER
+    if reach > spec.LVL_GAP + TOL:
+        problems.append(f"the clearance pass reaches {reach:.3f}\" outside each leg, past the {spec.LVL_GAP}\" gap to the next leg")
     return problems
 
 

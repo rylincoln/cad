@@ -94,7 +94,13 @@ def test_a_collet_nut_too_close_to_the_lvl_is_reported(monkeypatch):
 
 def test_a_ridge_between_the_clearance_and_rough_passes_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "CLEARANCE_OFFSET", 0.3)
-    assert _problems() == ["the clearance pass leaves a ridge between itself and the rough pass"]
+    assert _problems() == ["the clearance pass leaves a ridge between itself and the rough pass",
+                           'the clearance pass reaches 0.550" outside each leg, past the 0.4" gap to the next leg']
+
+
+def test_a_clearance_pass_reaching_the_next_leg_is_reported(monkeypatch):
+    monkeypatch.setattr(spec, "LVL_GAP", 0.35)
+    assert _problems() == ['the clearance pass reaches 0.375" outside each leg, past the 0.35" gap to the next leg']
 
 
 def test_a_leg_that_doesnt_reach_the_top_is_reported(table, sheets):

@@ -1,3 +1,4 @@
+import re
 import xml.etree.ElementTree as ET
 
 import ezdxf
@@ -65,6 +66,17 @@ def test_the_svg_is_sized_in_inches_with_a_group_per_layer(tmp_path, sheets):
     root = ET.parse(path).getroot()
     assert (root.get("width"), root.get("height"), root.get("viewBox")) == ("32.5in", "11.75in", "0 0 32.5 11.75")
     assert {g.get("id") for g in root.findall(f"{SVG}g")} == EXPECTED_LAYERS["legs"]
+
+
+def test_the_top_svg_has_the_shallow_end_on_the_left(tmp_path, sheets):
+    path = tmp_path / "top.svg"
+    write_svg(sheets["top"], path)
+    root = ET.parse(path).getroot()
+    height = float(root.get("viewBox").split()[3])
+    group = next(g for g in root.findall(f"{SVG}g") if g.get("id") == "CUT_OUTSIDE")
+    numbers = re.findall(r"(-?\d+\.?\d*),(-?\d+\.?\d*)", group.find(f"{SVG}path").get("d"))
+    points = [(float(x), height - float(y)) for x, y in numbers]
+    assert min(y for x, y in points if x < 3.3) > min(y for x, y in points if x > 28.8) + 1.5
 
 
 def test_the_preview_is_a_png(tmp_path, sheets):

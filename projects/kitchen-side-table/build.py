@@ -10,7 +10,7 @@ from pathlib import Path
 from cadgen.drawing_checks import validate_dxf_file
 
 from table import spec
-from table.aprons import dowel_depths, long_apron_length, side_apron_length
+from table.aprons import dowel_depths, make_aprons, long_apron_length, side_apron_length
 from table.export import write_dxf, write_preview, write_svg
 from table.frame import build_table, tip_load
 from table.legs import leg_length
@@ -55,6 +55,14 @@ def build(out_dir: Path = OUT) -> dict:
         "lvl_spare": round(lvl_spare(legs), 3),
         "lvl_depths": {name: round(value, 3) for name, value in depths.items()},
         "dowel_depths": tuple(round(depth, 4) for depth in dowel_depths()),
+        "dowel_positions": tuple(round(a, 4) for a in make_aprons()[0].dowels),
+        "cut_depths": {
+            "housing": round(spec.HOUSING_DEPTH, 4),
+            "lap": round(spec.PLY_THICKNESS, 4),
+            "groove": round(spec.GROOVE_DEPTH, 4),
+            "plywood": round(spec.PLY_THICKNESS + spec.THROUGH, 4),
+            "top": round(spec.TOP_THICKNESS + spec.THROUGH, 4),
+        },
         "tip_load": round(tip_load(table)),
         "nominal": list(spec.NOMINAL),
     }
@@ -74,8 +82,13 @@ def main(out_dir: Path = OUT) -> int:
     print(f"aprons: long {report['long_apron']} in, side {report['side_apron']} in")
     print(f"LVL: {report['lvl_spare']} in spare; clearance pass {depths['clearance']} in deep, "
           f"finish to {depths['first_stage']} in, then to {depths['full']} in")
+    cuts = report["cut_depths"]
+    print(f"pockets: housing {cuts['housing']} in, lap {cuts['lap']} in, groove {cuts['groove']} in; "
+          f"cut-outs: plywood {cuts['plywood']} in, top {cuts['top']} in")
     in_top, in_apron = report["dowel_depths"]
-    print(f"dowel holes: {in_top} in into the top, {in_apron} in into the aprons")
+    first, second = report["dowel_positions"]
+    print(f"dowel holes: {in_top} in into the top, {in_apron} in into the aprons, "
+          f"{first} and {second} in from each end of the long aprons")
     print(f"{report['tip_load']} lb on the front edge would tip it")
     if report["nominal"]:
         print(f"still nominal, measure and update spec.py: {', '.join(report['nominal'])}")

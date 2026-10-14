@@ -14,7 +14,9 @@ def test_build_writes_every_file_into_a_new_folder_and_reports_the_numbers(tmp_p
     assert {str(p.relative_to(out)) for p in out.rglob("*") if p.is_file()} == EXPECTED_FILES
     assert report == {"top": (31.75, 23.75), "leg_length": 31.25, "long_apron": 26.75, "side_apron": 15.178,
                       "lvl_spare": 0.296, "lvl_depths": {"full": 1.806, "clearance": 0.506, "first_stage": 1.3},
-                      "dowel_depths": (0.5, 1.0625), "tip_load": 64, "nominal": ["TOP_WIDTH", "TOP_DEPTH"]}
+                      "dowel_depths": (0.5, 1.0625), "dowel_positions": (12.375, 14.375),
+                      "cut_depths": {"housing": 0.75, "lap": 0.723, "groove": 0.3125, "plywood": 0.743, "top": 0.77},
+                      "tip_load": 64, "nominal": ["TOP_WIDTH", "TOP_DEPTH"]}
 
 
 def test_build_refuses_to_write_anything_when_a_rule_fails(tmp_path, monkeypatch):
@@ -36,7 +38,10 @@ def test_main_prints_the_numbers_and_the_values_still_to_measure(tmp_path, capsy
     assert build.main(tmp_path) == 0
     out = capsys.readouterr().out
     assert "top 31.75 x 23.75 in, legs 31.25 in long" in out
-    assert "dowel holes: 0.5 in into the top, 1.0625 in into the aprons" in out
+    assert ("pockets: housing 0.75 in, lap 0.723 in, groove 0.3125 in; "
+            "cut-outs: plywood 0.743 in, top 0.77 in") in out
+    assert ("dowel holes: 0.5 in into the top, 1.0625 in into the aprons, "
+            "12.375 and 14.375 in from each end of the long aprons") in out
     assert "still nominal, measure and update spec.py: TOP_WIDTH, TOP_DEPTH" in out
 
 
