@@ -57,3 +57,4 @@ tools/py projects/kitchen-side-table/build.py            # regenerate out/; writ
   metadata, restore it with `git checkout -- <file>`.
 - When the design changes, add a revision to the spec and update `README.md`. Keep the README's
   depths in step with the build's printout.
+- `out/*.c2d` are the owner's own Carbide Create jobs. Never regenerate, overwrite, revert or stage them.

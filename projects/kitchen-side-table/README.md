@@ -16,7 +16,7 @@ build plan is in `docs/plans/`.
 1. Glue up the top (Assembly, step 1), then measure its width and depth. Set `TOP_WIDTH` and
    `TOP_DEPTH` in `table/spec.py`, and take both names out of `NOMINAL`.
 2. Rebuild from the repo root: `tools/py projects/kitchen-side-table/build.py`. It prints the sizes,
-   the LVL's depths and the dowel holes' depths, and it writes nothing if any rule fails.
+   the LVL's depths, the pockets' and cut-outs' depths, and the dowel holes' depths and positions, and it writes nothing if any rule fails.
 
 ## Files
 
@@ -42,9 +42,9 @@ Zero X and Y there, and Z on top of the stock.
 | `GROOVE_CENTERLINE` | red | Contour, no offset, 5/16" deep |
 | `CLEARANCE` | cyan | Contour, outside, 0.506" deep. Legs only. |
 | `ROUGH` | magenta | Contour, outside, to full depth: 1.806". Legs only. |
-| `CUT_OUTSIDE` | blue | Contour, outside, to full depth. On the legs, two passes: to 1.3", then from 1.3" to 1.806". |
+| `CUT_OUTSIDE` | blue | Contour, outside, to full depth per job: plywood 0.743", top 0.77", legs 1.806" in two passes (to 1.3", then to 1.806"). |
 
-These depths are what the build prints for the measured stock and bits. If a measurement changes,
+The build prints every depth in this table for the measured stock and bits. If a measurement changes,
 rebuild and use the new figures.
 
 ## Machining
@@ -60,8 +60,9 @@ These are starting settings; tune them by sound and chip.
 - **Hold-down:** painter's tape and CA glue under the LVL and the top, so neither needs tabs. Their
   cuts go 0.02" into the spoilboard. The plywood is held by its tabs.
 - **Job 2 before job 3:** the coupon from job 1 should slide into the test housing snug by hand, and
-  sit flush in the test lap. If it doesn't, change `FIT_CLEARANCE` in `table/spec.py`, rebuild, and
-  test again before you cut the LVL.
+  sit flush in the test lap. If it is tight or loose in the housing, change `FIT_CLEARANCE` in
+  `table/spec.py`. If it sits proud or low in the lap, check Z zero, re-measure the plywood and set
+  `PLY_THICKNESS`. Either way, rebuild and test again before you cut the LVL.
 - **Job 3, in this order:** the pockets; the clearance pass; the rough pass; the outline to 1.3";
   then the outline from 1.3" to full depth. The clearance pass widens the top of each slot, so the
   bit's smooth shank never rubs once it goes deeper than the flutes.
@@ -79,11 +80,12 @@ These are starting settings; tune them by sound and chip.
    (see "Before you cut").
 2. **Cut jobs 1 to 4**, with the fit test before the LVL.
 3. **Dry-fit the base.** The side aprons drop into the housings. The long aprons sit in the laps,
-   flush with the legs' inside faces.
+   flush with the legs' inside faces. Each apron's top edge is the one nearer its clip groove: the
+   groove runs ⅜" below the top edge, on the inside face, which faces into the table.
 4. **Glue the end frames:** each end's front leg, back leg and side apron. Check they're square.
 5. **Drill the long aprons' dowel holes** before they go in: two per apron, in the top edge, 5/16"
-   wide and 1-1/16" deep. They go 12⅜" and 14⅜" from either end (an inch either side of the
-   middle), centered on the plywood's thickness. A doweling jig keeps them square. Then glue the
+   wide. The positions and the 1-1/16" depth are what the build prints; nominally they are 1-1/16"
+   deep and 12⅜" and 14⅜" from either end (an inch either side of the middle), centered on the plywood's thickness. A doweling jig keeps them square. Then glue the
    long aprons into their laps, with two screws each from inside.
 6. **Finish.** Ease every edge by sanding. Seal the top's end-grain front and back edges first, so
    they don't darken more than the face. Put polyurethane on every face, the top's underside
@@ -92,7 +94,7 @@ These are starting settings; tune them by sound and chip.
 7. **Attach the top.** Lay it upside down on a blanket. Put dowel centers in the four apron holes,
    set the base upside down on the top in its place (legs' outer faces 1" in from each end, back
    legs' back faces 3" from the back edge), and press to mark the top. Drill the four marks 5/16"
-   wide and ½" deep, with a stop collar so the bit can't go through. Glue the dowels in, with glue
+   wide and as deep as the build prints (½" nominal), with a stop collar so the bit can't go through. Glue the dowels in, with glue
    only in the holes and on the 2" of apron edge between them; glue anywhere else would lock the
    top. Fit eight Z-clips in the grooves with ⅝" screws: one in each long-apron groove, two in each
    side apron's.

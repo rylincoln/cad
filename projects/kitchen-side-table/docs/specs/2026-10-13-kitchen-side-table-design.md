@@ -152,7 +152,7 @@ All plywood parts are 3.0 tall and as thick as the plywood.
   housing. Length = (front-leg front face − back-leg back face) − 2 × leg thickness + 2 × 0.75.
   15.18 with the measured LVL.
 - **Clip groove** along each apron's inside face, centered 0.5 below its top edge. It stops 0.5 short
-  of the part of the apron that goes into a leg (0.5 + lap or housing depth from each end).
+  of the part of the apron that goes into a leg (0.5 + the lap's length or the housing's depth from each end).
 - **Dowel holes:** two in the top edge of each long apron, centered on its thickness, 1.0 either side
   of its middle, 1.0625 deep nominal. They reach down through the groove's height, so each long apron's
   groove stops 0.5 short of them and becomes two grooves. The side aprons have one groove each.
@@ -324,3 +324,6 @@ Starting settings; tune by sound and chip.
 - **2026-10-13 (planning, prototype):** the groove layer is `GROOVE_CENTERLINE`; the dowel holes'
   depths follow the measured top; rules 2, 3 and 10 are restated as the prototype checks them; the
   tipping figure is about 64 lb.
+- **2026-10-13 (final review):** the build prints every Carbide Create depth and the dowel positions;
+  the README's fit-test remedy separates the housing's clearance from the lap's depth; a rule keeps
+  the clearance pass inside the gap between legs; and the clip groove's setback wording is fixed.
