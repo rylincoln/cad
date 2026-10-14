@@ -9,7 +9,7 @@ from table import spec
 from table.aprons import dowel_depths, dowel_hole
 from table.frame import Placed, Table, extent, front_leg_face_y, tip_load
 from table.legs import fit_test_pockets
-from table.sheets import Sheet, lvl_clamp_room, lvl_depths
+from table.sheets import Sheet, lvl_clamp_room, lvl_depths, top_clamp_room
 
 TOL = 1e-6
 SLIVER = 0.002  # uncut bits of pocket thinner than this are curve-flattening noise, not a missed corner
@@ -155,10 +155,14 @@ def _shank_clear() -> list[str]:
 
 
 def _clamps_hold(sheets: list[Sheet]) -> list[str]:
+    problems = []
     room = lvl_clamp_room(next(s for s in sheets if s.lvl))
     if room < spec.CLAMP_ROOM - TOL:
-        return [f"the cutter leaves only {room:.3f}\" of wood along the LVL's long edges for the clamps, under {spec.CLAMP_ROOM}\""]
-    return []
+        problems.append(f"the cutter leaves only {room:.3f}\" of wood along the LVL's long edges for the clamps, under {spec.CLAMP_ROOM}\"")
+    room = top_clamp_room(next(s for s in sheets if s.name == "top"))
+    if room < spec.CLAMP_ROOM - TOL:
+        problems.append(f"the cutter leaves only {room:.3f}\" of wood along the glue-up's front and back edges for the clamps, under {spec.CLAMP_ROOM}\"")
+    return problems
 
 
 def _height(table: Table) -> list[str]:

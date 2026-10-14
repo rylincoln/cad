@@ -22,7 +22,7 @@ def test_the_model_has_every_part_and_four_dowels(model):
 
 def test_every_part_lands_where_the_frame_puts_it(model):
     boxes = _boxes(model)
-    expect = {"top": (0, 31.75, 0, 23.75, 31.25, 32.0),
+    expect = {"top": (0, 31.75, 0, 22.95, 31.25, 32.0),
               "front-left": (1.0, 4.25, 3.5, 5.12, 0, 31.25),
               "front-right": (27.5, 30.75, 3.5, 5.12, 0, 31.25),
               "back-left": (1.0, 4.25, 18.798, 20.418, 0, 31.25),

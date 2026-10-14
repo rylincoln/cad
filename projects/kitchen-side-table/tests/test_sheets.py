@@ -2,7 +2,7 @@ import pytest
 
 from table.legs import make_leg
 from table import spec
-from table.sheets import lvl_clamp_room, lvl_depths
+from table.sheets import lvl_clamp_room, lvl_depths, top_clamp_room
 
 
 def test_there_are_four_jobs(sheets):
@@ -35,6 +35,10 @@ def test_the_legs_sit_centred_across_the_lvl_leaving_the_clamps_wood_along_both_
     assert lvl_clamp_room(sheets["legs"]) == pytest.approx(0.148, abs=0.005)
 
 
+def test_the_top_leaves_the_clamps_an_eighth_of_wood_beyond_the_rough_pass_along_the_glue_ups_front_and_back(sheets):
+    assert top_clamp_room(sheets["top"]) == pytest.approx(0.13)
+
+
 def test_the_aprons_go_in_three_strips_with_the_coupon_above(sheets):
     bounds = {p.name: p.outline.bounds for p in sheets["aprons"].parts}
     assert bounds["back apron"] == pytest.approx((2.625, 0.125, 29.375, 3.096))
@@ -52,7 +56,7 @@ def test_the_grooves_go_on_with_their_aprons(sheets):
 
 def test_the_top_sits_show_face_up_with_its_front_edge_toward_the_operator(sheets):
     outline = sheets["top"].parts[0].outline
-    assert outline.bounds == pytest.approx((0.125, 0.125, 31.875, 23.875))
+    assert outline.bounds == pytest.approx((0.125, 0.4, 31.875, 23.35))
     left_front = min(y for x, y in outline.exterior.coords if x < 3.3)
     right_front = min(y for x, y in outline.exterior.coords if x > 28.8)
     assert left_front > right_front + 1.5

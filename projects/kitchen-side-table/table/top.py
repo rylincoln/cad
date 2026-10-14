@@ -11,8 +11,8 @@ SAMPLES = 400
 
 
 def top_size() -> tuple[float, float]:
-    """Finished width and depth: the glue-up less the trim on every side."""
-    return spec.TOP_WIDTH - 2 * spec.TOP_TRIM, spec.TOP_DEPTH - 2 * spec.TOP_TRIM
+    """Finished width and depth: the glue-up less the trim at its ends and along its front and back."""
+    return spec.TOP_WIDTH - 2 * spec.TOP_TRIM, spec.TOP_DEPTH - 2 * spec.TOP_CLAMP_TRIM
 
 
 def front_edge_y(x: float) -> float:

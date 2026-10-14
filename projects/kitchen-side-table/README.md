@@ -1,6 +1,6 @@
 # Kitchen side table
 
-A small side table for beside the kitchen: 31¾ × 23¾" and 32" tall. The back stands against the
+A small side table for beside the kitchen: 31¾ × 22.95" and 32" tall. The back stands against the
 wall. The front edge sweeps in an asymmetric curve, shallow at the left end as seen from the room.
 It has four flared LVL legs, plywood aprons on all four sides, and a cherry top held by four glued
 dowels at its middle and eight Z-clips. Every part is cut on a Shapeoko Pro XXL from files this
@@ -13,8 +13,10 @@ build plan is in `docs/plans/`.
 
 ## Before you cut
 
-1. Glue up the top (Assembly, step 1), then measure its width and depth. Set `TOP_WIDTH` and
-   `TOP_DEPTH` in `table/spec.py`, and take both names out of `NOMINAL`.
+1. The top's glue-up is measured, 32 × 23¾" usable, and set in `table/spec.py`. The top comes out
+   ¼" narrower and 0.8" shallower, leaving wood along the front and back for the clamps. The base
+   is already cut, so if the glue-up changes, move `BACK_LEG_FROM_WALL` and `LEG_INSET` to keep
+   the aprons at the lengths the build prints (26.75" and 15.178"), not the other way round.
 2. Rebuild from the repo root: `tools/py projects/kitchen-side-table/build.py`. It prints the sizes,
    the LVL's depths, the pockets' and cut-outs' depths, and the dowel holes' depths and positions, and it writes nothing if any rule fails.
 
@@ -25,7 +27,7 @@ build plan is in `docs/plans/`.
 | `out/aprons.dxf` / `.svg` | 1 | Plywood, 32 × 11⅞ × 0.706", the worse face up |
 | `out/fit_test.dxf` / `.svg` | 2 | An offcut of the LVL, at least 6 × 4" |
 | `out/legs.dxf` / `.svg` | 3 | LVL faced to 1.62" thick, 32½ × 11¾, the worse face up |
-| `out/top.dxf` / `.svg` | 4 | The cherry glue-up, show face up, curved edge toward you |
+| `out/top.dxf` / `.svg` | 4 | The cherry glue-up, 32 × 23¾", show face up, curved edge toward you |
 | `out/table.step` / `.glb` | – | The assembled table in 3D. Open the GLB in the CAD Viewer. |
 | `out/previews/*.png` | – | Each job seen from above, with the parts named |
 
@@ -54,12 +56,12 @@ These are starting settings; tune them by sound and chip.
 | Job | Bit | Settings |
 |---|---|---|
 | 1 aprons | ¼" three-flute, 1" flute | 16,000 RPM, 50 IPM, 15 IPM plunge (ramp), 0.1" per pass. Tabs on the plywood parts. |
-| 2 fit test | ¼" two-flute, set up as for job 3 | As job 3: the same bit, feeds and material as the leg pockets, so the test predicts them. |
-| 3 legs | ¼" two-flute, 1.4" flute: ½" in the collet, 2" out | 12–14,000 RPM, 40 IPM, 10 IPM plunge (ramp), 0.05" per pass. Vacuum and air throughout. About 5 hours. |
+| 2 fit test | ¼" two-flute, set up as for job 3 | As job 3's housings: the same bit, feeds and material, so the test predicts them. |
+| 3 legs | ¼" two-flute, 1.4" flute: ½" in the collet, 2" out | Housings as the fit test: 13,000 RPM, 40 IPM, 0.05" per pass. Laps, clearance and rough: 16,000 RPM, 75 IPM, 20 IPM plunge (ramp), 0.1" per pass (rough 0.08"). Finish: 60 IPM, to 1.3" in two passes, then to full depth in one; the rough pass leaves only 0.02". Vacuum and air throughout. About 3 hours. |
 | 4 top | ¼" three-flute | As job 1, with a full-depth finishing pass on the outline |
 
-- **Hold-down:** painter's tape and CA glue under the LVL and the top. Their cuts go 0.02" into the
-  spoilboard. The plywood is held by its tabs.
+- **Hold-down:** painter's tape and CA glue under the LVL. Its cuts and the top's go 0.02" into the
+  spoilboard. The plywood is held by its tabs, and the top by four tabs to its clamped edges.
 - **Leg tabs:** `legs.c2d` has 16 tabs, 0.17" high and 0.75" long, in two rows across the board,
   8½" and 24" from its left end: one on each long edge of each leg. They hold the legs and the
   slivers between them to each other and to the board's front and back edges, where you clamp.
@@ -70,6 +72,13 @@ These are starting settings; tune them by sound and chip.
   the top half inch). At full depth the collet nut passes 0.36" above the board and reaches out past
   its edges, so no part of a clamp may stand more than about 5/16" above the board's top: grip the
   edges low. With the spindle off, jog the bit down to full depth beside each clamp and check.
+- **Top tabs and clamps:** clamp the glue-up's front and back edges at 8½" and 24" from its left
+  end, as with the LVL. `top.c2d` has a tab on each of those edges at each place: 4 tabs, 0.15"
+  high and ½" long, which both passes leave. The top sits 0.4" inside the front and back edges,
+  so even the rough pass stays 0.13" inside them. If you re-import `top.dxf`, add the tabs again.
+  The two front tabs are on the show edge: saw them off a hair proud and sand them flush with the
+  curve. With the spindle off, jog the bit down to full depth beside each clamp and check the
+  collet nut clears it.
 - **Job 2 between jobs 1 and 3:** cut the aprons first, then the fit test, then the legs. Test with
   the coupon from job 1, or any offcut of the same plywood: only its thickness matters. It should
   slide into the test housing snug by hand, and sit flush in the test lap. If it is tight or loose in the housing, change `FIT_CLEARANCE` in
@@ -105,7 +114,7 @@ These are starting settings; tune them by sound and chip.
    and the 2" of apron edge between them.
 7. **Attach the top.** Lay it upside down on a blanket. Put dowel centers in the four apron holes,
    set the base upside down on the top in its place (legs' outer faces 1" in from each end, back
-   legs' back faces 3⅓" from the back edge), and press to mark the top. Drill the four marks 5/16"
+   legs' back faces 2.53" from the back edge), and press to mark the top. Drill the four marks 5/16"
    wide and as deep as the build prints (½" nominal), with a stop collar so the bit can't go through. Glue the dowels in, with glue
    only in the holes and on the 2" of apron edge between them; glue anywhere else would lock the
    top. Fit eight Z-clips in the grooves with ⅝" screws: one in each long-apron groove, two in each

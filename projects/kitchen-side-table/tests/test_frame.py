@@ -19,7 +19,7 @@ def test_the_legs_stand_an_inch_in_from_each_end_with_the_flare_toward_the_middl
         assert max(abs(x - outer) for x in foot) == pytest.approx(1.5)
 
 
-def test_the_front_legs_stand_3_5_behind_the_front_edge_and_the_back_legs_3_332_from_the_wall(table):
+def test_the_front_legs_stand_3_5_behind_the_front_edge_and_the_back_legs_2_532_from_the_wall(table):
     placed = _placed(table)
     for name in ("front-left", "front-right"):
         lo, hi = extent(placed[name])
@@ -30,7 +30,7 @@ def test_the_front_legs_stand_3_5_behind_the_front_edge_and_the_back_legs_3_332_
 
 
 def test_every_inside_face_faces_the_middle_of_the_table(table):
-    middle = (31.75 / 2, 23.75 / 2)
+    middle = (31.75 / 2, 22.95 / 2)
     for part in (p for p in table.placed if p.name != "top"):
         to_middle = (middle[0] - part.origin[0], middle[1] - part.origin[1])
         assert part.normal[0] * to_middle[0] + part.normal[1] * to_middle[1] > 0, part.name
@@ -72,8 +72,8 @@ def test_the_dowels_sit_at_the_middle_of_the_long_aprons_where_they_meet_the_top
 def test_the_empty_table_weighs_about_24_lb_centered_about_12_in_back(table):
     weight, center_y = weight_and_center_y(table)
     assert weight == pytest.approx(24.1, abs=0.5)
-    assert center_y == pytest.approx(12.08, abs=0.1)
+    assert center_y == pytest.approx(11.89, abs=0.1)
 
 
-def test_it_takes_about_59_lb_on_the_front_edge_to_tip_it(table):
-    assert tip_load(table) == pytest.approx(59.0, abs=1.0)
+def test_it_takes_about_57_lb_on_the_front_edge_to_tip_it(table):
+    assert tip_load(table) == pytest.approx(56.8, abs=1.0)

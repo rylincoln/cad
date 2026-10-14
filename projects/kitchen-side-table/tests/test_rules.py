@@ -34,6 +34,11 @@ def test_too_little_wood_for_the_clamps_along_the_lvls_edges_is_reported(monkeyp
     assert _problems() == ['the cutter leaves only 0.023" of wood along the LVL\'s long edges for the clamps, under 0.125"']
 
 
+def test_too_little_wood_for_the_clamps_along_the_tops_edges_is_reported(monkeypatch):
+    monkeypatch.setattr(spec, "TOP_CLAMP_TRIM", 0.3)
+    assert _problems() == ['the cutter leaves only 0.030" of wood along the glue-up\'s front and back edges for the clamps, under 0.125"']
+
+
 def test_parts_closer_than_the_sheets_gap_are_reported(table, sheets):
     aprons = sheets["aprons"]
     crowded = dataclasses.replace(aprons.parts[1], outline=translate(aprons.parts[1].outline, 0, -0.2))
@@ -44,7 +49,7 @@ def test_parts_closer_than_the_sheets_gap_are_reported(table, sheets):
 
 def test_stock_too_big_for_the_machine_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "TOP_WIDTH", 36.0)
-    assert _problems() == ['top: the 36 x 24" stock doesn\'t fit the 33 x 33" work area']
+    assert _problems() == ['top: the 36 x 23.75" stock doesn\'t fit the 33 x 33" work area']
 
 
 def test_a_square_corner_the_bit_cant_reach_is_reported(table, sheets):
@@ -84,12 +89,12 @@ def test_legs_too_near_the_tops_edge_are_reported(monkeypatch):
 def test_a_front_edge_too_far_past_the_legs_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "FRONT_LEG_BEHIND_EDGE", 5.0)
     assert _problems() == ['the front edge reaches 5.00" past the front legs, more than 3.5"',
-                           "36 lb on the front edge would tip the table, under 50 lb"]
+                           "34 lb on the front edge would tip the table, under 50 lb"]
 
 
 def test_a_table_too_easy_to_tip_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "MIN_TIP_LOAD", 100.0)
-    assert _problems() == ["59 lb on the front edge would tip the table, under 100 lb"]
+    assert _problems() == ["57 lb on the front edge would tip the table, under 100 lb"]
 
 
 def test_a_collet_nut_too_close_to_the_lvl_is_reported(monkeypatch):

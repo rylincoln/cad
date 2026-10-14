@@ -16,7 +16,7 @@ from table.frame import build_table, tip_load
 from table.legs import leg_length
 from table.model import write_model
 from table.rules import check_table
-from table.sheets import lvl_clamp_room, lvl_depths, make_sheets
+from table.sheets import lvl_clamp_room, lvl_depths, make_sheets, top_clamp_room
 from table.top import top_size
 
 OUT = Path(__file__).resolve().parent / "out"
@@ -53,6 +53,7 @@ def build(out_dir: Path = OUT) -> dict:
         "long_apron": round(long_apron_length(), 3),
         "side_apron": round(side_apron_length(), 3),
         "lvl_clamp_room": round(lvl_clamp_room(legs), 3),
+        "top_clamp_room": round(top_clamp_room(next(s for s in sheets if s.name == "top")), 3),
         "lvl_depths": {name: round(value, 3) for name, value in depths.items()},
         "dowel_depths": tuple(round(depth, 4) for depth in dowel_depths()),
         "dowel_positions": tuple(round(a, 4) for a in make_aprons()[0].dowels),
@@ -82,6 +83,7 @@ def main(out_dir: Path = OUT) -> int:
     print(f"aprons: long {report['long_apron']} in, side {report['side_apron']} in")
     print(f"LVL: {report['lvl_clamp_room']} in of wood left along each long edge for the clamps; "
           f"clearance pass {depths['clearance']} in deep, finish to {depths['first_stage']} in, then to {depths['full']} in")
+    print(f"top: {report['top_clamp_room']} in of wood left along the glue-up's front and back edges for the clamps")
     cuts = report["cut_depths"]
     print(f"pockets: housing {cuts['housing']} in, lap {cuts['lap']} in, groove {cuts['groove']} in; "
           f"cut-outs: plywood {cuts['plywood']} in, top {cuts['top']} in")

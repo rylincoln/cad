@@ -4,8 +4,8 @@ from shapely.geometry import Point
 from table.top import front_edge_y, top_outline, top_size
 
 
-def test_the_finished_top_is_the_glue_up_less_the_trim():
-    assert top_size() == pytest.approx((31.75, 23.75))
+def test_the_finished_top_is_the_glue_up_less_an_eighth_at_each_end_and_0_4_front_and_back():
+    assert top_size() == pytest.approx((31.75, 22.95))
 
 
 def test_the_front_edge_starts_2_25_back_at_the_left_and_reaches_the_front_at_82_percent():
@@ -16,15 +16,15 @@ def test_the_front_edge_starts_2_25_back_at_the_left_and_reaches_the_front_at_82
     assert all(front_edge_y(w * i / 20) >= front_edge_y(w * (i + 1) / 20) for i in range(20))
 
 
-def test_the_top_is_21_5_deep_at_the_left_end_and_23_75_at_the_right():
+def test_the_top_is_20_7_deep_at_the_left_end_and_22_95_at_the_right():
     w, d = top_size()
-    assert d - front_edge_y(0.0) == pytest.approx(21.5)
-    assert d - front_edge_y(w) == pytest.approx(23.75)
+    assert d - front_edge_y(0.0) == pytest.approx(20.7)
+    assert d - front_edge_y(w) == pytest.approx(22.95)
 
 
 def test_the_outline_fills_the_finished_size():
     assert top_outline().is_valid
-    assert top_outline().bounds == pytest.approx((0.0, 0.0, 31.75, 23.75))
+    assert top_outline().bounds == pytest.approx((0.0, 0.0, 31.75, 22.95))
 
 
 def test_the_back_corners_are_square_and_the_front_corners_rounded():

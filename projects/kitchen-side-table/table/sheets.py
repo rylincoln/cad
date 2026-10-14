@@ -122,7 +122,7 @@ def fit_test_sheet() -> Sheet:
 
 def top_sheet(table: Table) -> Sheet:
     """The show face up and the front edge toward the operator, so the shallow end is on the left."""
-    part = SheetPart("top", translate(table.top, spec.TOP_TRIM, spec.TOP_TRIM), ())
+    part = SheetPart("top", translate(table.top, spec.TOP_TRIM, spec.TOP_CLAMP_TRIM), ())
     return Sheet("top", "Job 4: cherry top", (spec.TOP_WIDTH, spec.TOP_DEPTH), 0.0, (part,))
 
 
@@ -143,3 +143,9 @@ def lvl_clamp_room(sheet: Sheet) -> float:
     below = min(p.outline.bounds[1] for p in sheet.parts)
     above = sheet.stock[1] - max(p.outline.bounds[3] for p in sheet.parts)
     return min(below, above) - spec.CLEARANCE_OFFSET - spec.BIT_DIAMETER
+
+
+def top_clamp_room(sheet: Sheet) -> float:
+    """The wood the rough pass, the widest cut, leaves between the top and the glue-up's nearer front or back edge."""
+    _, below, _, top = sheet.parts[0].outline.bounds
+    return min(below, sheet.stock[1] - top) - spec.ROUGH_OFFSET - spec.BIT_DIAMETER

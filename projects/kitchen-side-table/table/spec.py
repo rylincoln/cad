@@ -7,7 +7,7 @@ from __future__ import annotations
 
 # measured stock and bit; a name stays in NOMINAL until it has been measured
 TOP_WIDTH = 32.0              # cherry glue-up, along the wall
-TOP_DEPTH = 24.0              # cherry glue-up, front to back
+TOP_DEPTH = 23.75             # cherry glue-up, front to back, the usable depth
 TOP_THICKNESS = 0.75          # finished stock
 LVL_LENGTH = 32.5
 LVL_WIDTH = 11.75
@@ -18,14 +18,16 @@ PLY_THICKNESS = 0.706         # the aprons as cut
 TWO_FLUTE_LENGTH = 1.4        # the 1/4" two-flute bit, for the LVL
 THREE_FLUTE_LENGTH = 1.0      # the 1/4" three-flute bit, for the plywood, fit test and top
 STICKOUT = 2.0                # the two-flute bit, out of the collet
-NOMINAL = ("TOP_WIDTH", "TOP_DEPTH")
+NOMINAL: tuple[str, ...] = ()
 
 # table
 HEIGHT = 32.0
-TOP_TRIM = 0.125              # the outline is cut this far inside the glue-up on every side
+TOP_TRIM = 0.125              # the outline is cut this far inside the glue-up's ends
+TOP_CLAMP_TRIM = 0.4          # and this far inside its front and back edges, where it is clamped
 LEG_INSET = 1.0               # legs' outer faces in from each end of the top
-BACK_LEG_FROM_WALL = 3.332    # back legs' back faces from the back edge; 3.0 at first, moved
-                              # forward with the faced LVL so the side aprons as cut still fit
+BACK_LEG_FROM_WALL = 2.532    # back legs' back faces from the back edge; 3.0 at first, 3.332 with
+                              # the faced LVL so the side aprons as cut still fit, then less the 0.8
+                              # the top lost to the clamps and the glue-up as measured
 FRONT_LEG_BEHIND_EDGE = 3.5   # front legs' front faces behind the front edge's deepest point
 SWEEP_DROP = 2.25
 SWEEP_FLAT_FROM = 0.82        # the sweep reaches the deepest point this fraction of the way along
