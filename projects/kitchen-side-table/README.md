@@ -22,9 +22,9 @@ build plan is in `docs/plans/`.
 
 | File | Job | Stock, as it sits on the machine |
 |---|---|---|
-| `out/aprons.dxf` / `.svg` | 1 | Plywood, 32 × 11⅞ × 0.723", the worse face up |
+| `out/aprons.dxf` / `.svg` | 1 | Plywood, 32 × 11⅞ × 0.706", the worse face up |
 | `out/fit_test.dxf` / `.svg` | 2 | An offcut of the LVL, at least 6 × 4" |
-| `out/legs.dxf` / `.svg` | 3 | LVL, 32½ × 11¾ × 1.786", the worse face up |
+| `out/legs.dxf` / `.svg` | 3 | LVL faced to 1.62" thick, 32½ × 11¾, the worse face up |
 | `out/top.dxf` / `.svg` | 4 | The cherry glue-up, show face up, curved edge toward you |
 | `out/table.step` / `.glb` | – | The assembled table in 3D. Open the GLB in the CAD Viewer. |
 | `out/previews/*.png` | – | Each job seen from above, with the parts named |
@@ -38,11 +38,11 @@ Zero X and Y there, and Z on top of the stock.
 |---|---|---|
 | `REFERENCE_STOCK` | grey | None. The stock's outline, to line up by. |
 | `POCKET_HOUSING` | orange | Pocket, 0.75" deep |
-| `POCKET_LAP` | yellow | Pocket, as deep as the plywood is thick: 0.723" |
+| `POCKET_LAP` | yellow | Pocket, as deep as the plywood is thick: 0.706" |
 | `GROOVE_CENTERLINE` | red | Contour, no offset, 5/16" deep |
-| `CLEARANCE` | cyan | Contour, outside, 0.506" deep. Legs only. |
-| `ROUGH` | magenta | Contour, outside, to full depth: 1.806". Legs only. |
-| `CUT_OUTSIDE` | blue | Contour, outside, to full depth per job: plywood 0.743", top 0.77", legs 1.806" in two passes (to 1.3", then to 1.806"). |
+| `CLEARANCE` | cyan | Contour, outside, 0.34" deep. Legs only. |
+| `ROUGH` | magenta | Contour, outside, to full depth: 1.64". Legs only. |
+| `CUT_OUTSIDE` | blue | Contour, outside, to full depth per job: plywood 0.726", top 0.77", legs 1.64" in two passes (to 1.3", then to 1.64"). |
 
 The build prints every depth in this table for the measured stock and bits. If a measurement changes,
 rebuild and use the new figures.
@@ -58,8 +58,18 @@ These are starting settings; tune them by sound and chip.
 | 3 legs | ¼" two-flute, 1.4" flute: ½" in the collet, 2" out | 12–14,000 RPM, 40 IPM, 10 IPM plunge (ramp), 0.05" per pass. Vacuum and air throughout. About 5 hours. |
 | 4 top | ¼" three-flute | As job 1, with a full-depth finishing pass on the outline |
 
-- **Hold-down:** painter's tape and CA glue under the LVL and the top, so neither needs tabs. Their
-  cuts go 0.02" into the spoilboard. The plywood is held by its tabs.
+- **Hold-down:** painter's tape and CA glue under the LVL and the top. Their cuts go 0.02" into the
+  spoilboard. The plywood is held by its tabs.
+- **Leg tabs:** `legs.c2d` has 16 tabs, 0.17" high and 0.75" long, in two rows across the board,
+  8½" and 24" from its left end: one on each long edge of each leg. They hold the legs and the
+  slivers between them to each other and to the board's front and back edges, where you clamp.
+  The rough pass and the last finish pass leave them; the other passes ignore them. If you
+  re-import `legs.dxf`, add them again. Saw them off flush and sand.
+- **Clamping the LVL:** clamp the front and back edges at 8½" and 24", where the tabs are. The
+  legs sit centered across the board, so the cutter stays 0.148" inside each long edge (0.25" below
+  the top half inch). At full depth the collet nut passes 0.36" above the board and reaches out past
+  its edges, so no part of a clamp may stand more than about 5/16" above the board's top: grip the
+  edges low. With the spindle off, jog the bit down to full depth beside each clamp and check.
 - **Job 2 between jobs 1 and 3:** cut the aprons first, then the fit test, then the legs. Test with
   the coupon from job 1, or any offcut of the same plywood: only its thickness matters. It should
   slide into the test housing snug by hand, and sit flush in the test lap. If it is tight or loose in the housing, change `FIT_CLEARANCE` in
@@ -70,7 +80,7 @@ These are starting settings; tune them by sound and chip.
   bit's smooth shank never rubs once it goes deeper than the flutes.
 - **Job 3, grip and clearance:** draw a marker line on the shank at the collet nut, and check it
   between steps. With the spindle off, jog the bit down beside the LVL until it touches the
-  spoilboard, and check that the collet nut is about 0.2" above the top of the board.
+  spoilboard, and check that the collet nut is about ⅜" above the top of the board.
 - **Mark each leg** with its name in pencil as it comes off (see `out/previews/legs.png`). The
   pockets face into the table.
 
@@ -95,7 +105,7 @@ These are starting settings; tune them by sound and chip.
    and the 2" of apron edge between them.
 7. **Attach the top.** Lay it upside down on a blanket. Put dowel centers in the four apron holes,
    set the base upside down on the top in its place (legs' outer faces 1" in from each end, back
-   legs' back faces 3" from the back edge), and press to mark the top. Drill the four marks 5/16"
+   legs' back faces 3⅓" from the back edge), and press to mark the top. Drill the four marks 5/16"
    wide and as deep as the build prints (½" nominal), with a stop collar so the bit can't go through. Glue the dowels in, with glue
    only in the holes and on the 2" of apron edge between them; glue anywhere else would lock the
    top. Fit eight Z-clips in the grooves with ⅝" screws: one in each long-apron groove, two in each

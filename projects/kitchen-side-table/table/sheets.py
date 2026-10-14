@@ -67,8 +67,13 @@ def _stack(below: SheetPart, leg: Leg, angle: float, x0: float, gap: float) -> S
     return _leg_part(leg, angle, x0 - minx, hi - miny)
 
 
+def _shifted(part: SheetPart, dy: float) -> SheetPart:
+    return SheetPart(part.name, translate(part.outline, 0, dy),
+                     tuple((layer, translate(shape, 0, dy)) for layer, shape in part.pockets))
+
+
 def legs_sheet(table: Table) -> Sheet:
-    """Two head-to-toe pairs of one handedness each, inside faces up, centered along the board."""
+    """Two head-to-toe pairs of one handedness each, inside faces up, centered on the board both ways."""
     legs = {leg.name: leg for leg in table.legs}
     x0 = (spec.LVL_LENGTH - leg_length()) / 2
     parts: list[SheetPart] = []
@@ -79,7 +84,10 @@ def legs_sheet(table: Table) -> Sheet:
         second = _stack(first, legs[upper], angle + 180.0, x0, spec.LVL_GAP)
         parts += [first, second]
         y = second.outline.bounds[3] + spec.LVL_GAP
-    return Sheet("legs", "Job 3: LVL legs", (spec.LVL_LENGTH, spec.LVL_WIDTH), spec.LVL_GAP, tuple(parts), lvl=True)
+    top = max(p.outline.bounds[3] for p in parts)
+    dy = (spec.LVL_WIDTH - top - spec.EDGE) / 2
+    return Sheet("legs", "Job 3: LVL legs", (spec.LVL_LENGTH, spec.LVL_WIDTH), spec.LVL_GAP,
+                 tuple(_shifted(p, dy) for p in parts), lvl=True)
 
 
 def aprons_sheet(table: Table) -> Sheet:
@@ -130,6 +138,8 @@ def lvl_depths() -> dict[str, float]:
             "first_stage": spec.TWO_FLUTE_LENGTH - spec.FLUTE_MARGIN}
 
 
-def lvl_spare(sheet: Sheet) -> float:
-    """The LVL's width left over above the legs and their edge margin."""
-    return spec.LVL_WIDTH - spec.EDGE - max(p.outline.bounds[3] for p in sheet.parts)
+def lvl_clamp_room(sheet: Sheet) -> float:
+    """The wood the clearance pass, the widest cut, leaves between the legs and the LVL's nearer long edge."""
+    below = min(p.outline.bounds[1] for p in sheet.parts)
+    above = sheet.stock[1] - max(p.outline.bounds[3] for p in sheet.parts)
+    return min(below, above) - spec.CLEARANCE_OFFSET - spec.BIT_DIAMETER

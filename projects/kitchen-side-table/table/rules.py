@@ -9,7 +9,7 @@ from table import spec
 from table.aprons import dowel_depths, dowel_hole
 from table.frame import Placed, Table, extent, front_leg_face_y, tip_load
 from table.legs import fit_test_pockets
-from table.sheets import Sheet, lvl_depths
+from table.sheets import Sheet, lvl_clamp_room, lvl_depths
 
 TOL = 1e-6
 SLIVER = 0.002  # uncut bits of pocket thinner than this are curve-flattening noise, not a missed corner
@@ -18,7 +18,7 @@ SLIVER = 0.002  # uncut bits of pocket thinner than this are curve-flattening no
 def check_table(table: Table, sheets: list[Sheet]) -> list[str]:
     return (_fits_stock(sheets) + _bit_reaches(table) + _joints_fit(table) + _top_covers_legs(table)
             + _stands(table) + _shank_clear() + _height(table) + _shallow_left(table, sheets)
-            + _grooves_clear(table) + _dowels_fit())
+            + _grooves_clear(table) + _dowels_fit() + _clamps_hold(sheets))
 
 
 def _fits_stock(sheets: list[Sheet]) -> list[str]:
@@ -152,6 +152,13 @@ def _shank_clear() -> list[str]:
     if reach > spec.LVL_GAP + TOL:
         problems.append(f"the clearance pass reaches {reach:.3f}\" outside each leg, past the {spec.LVL_GAP}\" gap to the next leg")
     return problems
+
+
+def _clamps_hold(sheets: list[Sheet]) -> list[str]:
+    room = lvl_clamp_room(next(s for s in sheets if s.lvl))
+    if room < spec.CLAMP_ROOM - TOL:
+        return [f"the cutter leaves only {room:.3f}\" of wood along the LVL's long edges for the clamps, under {spec.CLAMP_ROOM}\""]
+    return []
 
 
 def _height(table: Table) -> list[str]:

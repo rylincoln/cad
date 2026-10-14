@@ -25,8 +25,13 @@ def test_the_approved_table_passes_every_rule(table, sheets):
 
 
 def test_a_part_too_close_to_the_stocks_edge_is_reported(monkeypatch):
-    monkeypatch.setattr(spec, "LVL_WIDTH", 11.4)
-    assert _problems() == ['legs: the back-left is not 0.125" inside the stock']
+    monkeypatch.setattr(spec, "PLY_WIDTH", 11.6)
+    assert _problems() == ['aprons: the coupon is not 0.125" inside the stock']
+
+
+def test_too_little_wood_for_the_clamps_along_the_lvls_edges_is_reported(monkeypatch):
+    monkeypatch.setattr(spec, "LEG_FOOT_WIDTH", 1.625)
+    assert _problems() == ['the cutter leaves only 0.023" of wood along the LVL\'s long edges for the clamps, under 0.125"']
 
 
 def test_parts_closer_than_the_sheets_gap_are_reported(table, sheets):
@@ -44,7 +49,7 @@ def test_stock_too_big_for_the_machine_is_reported(monkeypatch):
 
 def test_a_square_corner_the_bit_cant_reach_is_reported(table, sheets):
     leg = table.legs[0]
-    plain = box(-1.103, 28.25, -0.375, 31.45)  # the front-left housing with no dogbones
+    plain = box(-1.086, 28.279, -0.375, 31.45)  # the front-left housing with no dogbones
     doctored = dataclasses.replace(table, legs=(dataclasses.replace(leg, housing=plain), *table.legs[1:]))
     assert check_table(doctored, list(sheets.values())) == ["the bit can't reach every corner of the front-left leg's housing"]
 
@@ -66,7 +71,7 @@ def test_a_pocket_too_shallow_for_its_apron_is_reported(table, sheets):
 
 def test_a_cut_deeper_than_the_three_flute_bits_flute_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "THREE_FLUTE_LENGTH", 0.7)
-    assert _problems() == ['the plywood cut-out is 0.743" deep, past the three-flute bit\'s 0.7" flute',
+    assert _problems() == ['the plywood cut-out is 0.726" deep, past the three-flute bit\'s 0.7" flute',
                            'the fit-test housing is 0.750" deep, past the three-flute bit\'s 0.7" flute',
                            'the top cut-out is 0.770" deep, past the three-flute bit\'s 0.7" flute']
 
@@ -79,23 +84,24 @@ def test_legs_too_near_the_tops_edge_are_reported(monkeypatch):
 def test_a_front_edge_too_far_past_the_legs_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "FRONT_LEG_BEHIND_EDGE", 5.0)
     assert _problems() == ['the front edge reaches 5.00" past the front legs, more than 3.5"',
-                           "39 lb on the front edge would tip the table, under 50 lb"]
+                           "36 lb on the front edge would tip the table, under 50 lb"]
 
 
 def test_a_table_too_easy_to_tip_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "MIN_TIP_LOAD", 100.0)
-    assert _problems() == ["64 lb on the front edge would tip the table, under 100 lb"]
+    assert _problems() == ["59 lb on the front edge would tip the table, under 100 lb"]
 
 
 def test_a_collet_nut_too_close_to_the_lvl_is_reported(monkeypatch):
-    monkeypatch.setattr(spec, "STICKOUT", 1.9)
-    assert _problems() == ['the collet nut clears the LVL by only 0.094" at full depth, under 0.15"']
+    monkeypatch.setattr(spec, "STICKOUT", 1.75)
+    assert _problems() == ['the collet nut clears the LVL by only 0.110" at full depth, under 0.15"']
 
 
 def test_a_ridge_between_the_clearance_and_rough_passes_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "CLEARANCE_OFFSET", 0.3)
     assert _problems() == ["the clearance pass leaves a ridge between itself and the rough pass",
-                           'the clearance pass reaches 0.550" outside each leg, past the 0.4" gap to the next leg']
+                           'the clearance pass reaches 0.550" outside each leg, past the 0.4" gap to the next leg',
+                           'the cutter leaves only -0.027" of wood along the LVL\'s long edges for the clamps, under 0.125"']
 
 
 def test_a_clearance_pass_reaching_the_next_leg_is_reported(monkeypatch):
@@ -146,7 +152,7 @@ def test_a_top_too_thin_to_hold_the_dowels_is_reported(monkeypatch):
 
 def test_a_dowel_too_fat_for_the_plywood_edge_is_reported(monkeypatch):
     monkeypatch.setattr(spec, "DOWEL_DIAMETER", 0.5)
-    assert _problems() == ['the dowel holes leave only 0.111" of plywood either side']
+    assert _problems() == ['the dowel holes leave only 0.103" of plywood either side']
 
 
 def test_a_glue_up_a_little_smaller_than_nominal_still_passes_and_rescales(monkeypatch):

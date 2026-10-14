@@ -10,11 +10,11 @@ def test_the_legs_are_31_25_long_so_the_table_is_32_tall():
     assert leg_length() == pytest.approx(31.25)
 
 
-def test_a_leg_is_1_75_wide_at_the_foot_and_flares_to_3_25_at_the_aprons():
-    assert leg_width(0.0) == pytest.approx(1.75)
-    assert leg_width(28.25) == pytest.approx(3.25)
+def test_a_leg_is_1_5_wide_at_the_foot_and_flares_to_3_25_at_the_aprons():
+    assert leg_width(0.0) == pytest.approx(1.5)
+    assert leg_width(28.279) == pytest.approx(3.25)
     assert leg_width(31.25) == pytest.approx(3.25)
-    widths = [leg_width(28.25 * i / 50) for i in range(51)]
+    widths = [leg_width(28.279 * i / 50) for i in range(51)]
     assert widths == sorted(widths)
 
 
@@ -27,14 +27,14 @@ def test_the_front_left_and_back_right_legs_flare_to_the_left_seen_from_the_insi
 
 def test_the_housing_is_the_plywood_plus_clearance_wide_and_open_at_the_top():
     leg = make_leg("front-right")
-    assert housing_width() == pytest.approx(0.728)
-    assert leg.housing.contains(box(0.375, 28.25, 1.103, 31.25))
+    assert housing_width() == pytest.approx(0.711)
+    assert leg.housing.buffer(1e-9).contains(box(0.375, 28.279, 1.086, 31.25))
     assert leg.housing.bounds[3] == pytest.approx(31.25 + spec.OPEN_END)
 
 
 def test_the_lap_is_open_at_the_inner_edge_and_the_top():
     leg = make_leg("front-right")
-    assert leg.lap.contains(box(1.5, 28.25, 3.25, 31.25))
+    assert leg.lap.contains(box(1.5, 28.279, 3.25, 31.25))
     assert leg.lap.bounds[2] == pytest.approx(3.25 + spec.OPEN_END)
     assert leg.lap.bounds[3] == pytest.approx(31.25 + spec.OPEN_END)
 
@@ -58,5 +58,5 @@ def test_the_legs_inside_faces_are_13_678_apart_front_to_back():
 
 def test_the_fit_test_pockets_take_the_coupon():
     housing, lap = fit_test_pockets()
-    assert housing.contains(box(0, 0, 0.723, 1.75))
+    assert housing.contains(box(0, 0, 0.706, 1.75))
     assert lap.contains(box(0, 0, 3.0, 1.75))

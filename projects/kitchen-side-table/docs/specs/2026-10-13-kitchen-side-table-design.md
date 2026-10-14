@@ -43,7 +43,7 @@ All approved in the brainstorming session, the shapes on visual mockups.
 - **Why aprons along the 32" length are essential:** the top's grain runs front to back, so its 32"
   length is across the grain, where ¾" cherry is weak and would sag under an appliance. The long
   aprons carry it.
-- **Legs: flared top.** Slim, 1¾" square at the floor, sweeping out to 3¼" wide where they meet the
+- **Legs: flared top.** Slim, 1½" wide at the floor, sweeping out to 3¼" wide where they meet the
   aprons. The flare faces the room; the striped LVL edges face the ends. The shape shows from the
   front and back only, since the CNC cuts the profile through the board's thickness.
 - **Top: the sweep.** The front edge runs from shallow at the **left end** (as seen from the room)
@@ -84,8 +84,8 @@ prints a warning naming it. The top's width and depth can only be measured after
 | Value | Measured (2026-10-13) or nominal |
 |---|---|
 | Top glue-up width × depth × thickness | nominal 32 × 24; thickness **0.75** from the finished stock |
-| LVL length × width × thickness | **measured** 32.5 × 11.75 × 1.786 |
-| Plywood length × width × thickness | **measured** 32 × 11.875 × 0.723 |
+| LVL length × width × thickness | **measured** 32.5 × 11.75 × 1.62, faced (1.786 as bought) |
+| Plywood length × width × thickness | **measured** 32 × 11.875 × 0.706, from the aprons as cut (2026-10-14) |
 | Two-flute bit: flute length, stickout | **measured** 1.4; stickout 2.0 as the user sets it |
 | Three-flute bit: flute length | 1.0, from the user |
 
@@ -96,10 +96,10 @@ Fixed design values:
 | Table height | 32.0 |
 | Top trim (CNC cuts the outline this far inside the glue-up on every side) | ⅛ |
 | Leg inset from each end of the top | 1.0 |
-| Back legs' back face from the wall | 3.0 |
+| Back legs' back face from the wall | 3.332 (3.0 before the LVL was faced) |
 | Front legs' front face, behind the deepest point of the front edge | 3.5 |
-| Leg width: at the aprons / at the floor; leg thickness | 3.25 / 1.75; the LVL's thickness |
-| Apron height | 3.0 |
+| Leg width: at the aprons / at the floor; leg thickness | 3.25 / 1.5 (1.75 at first); the LVL's thickness |
+| Apron height | 2.971, the aprons as cut (drawn 3.0 for job 1) |
 | Side-apron housing: from the leg's outer face, depth | 0.375, 0.75 |
 | Long-apron lap: length along the leg, depth | 1.75, the plywood's thickness |
 | Fit clearance on the housing width | 0.005 |
@@ -109,8 +109,8 @@ Fixed design values:
 | Dowel holes: cherry left above the top's hole; how much deeper the two holes are than the dowel is long, for glue | 0.25; 1/16. Nominal holes: 0.5 into the top, 1.0625 into the apron |
 | Bit diameter | 0.25 |
 
-With these values the finished top is 31.75 × 23.75, the legs are 31.25 long and 1.786 thick, the
-housings are 0.728 wide, and the laps are 0.723 deep.
+With these values the finished top is 31.75 × 23.75, the legs are 31.25 long and 1.62 thick, the
+housings are 0.711 wide, and the laps are 0.706 deep.
 
 ## Geometry
 
@@ -130,12 +130,12 @@ Leg length L = 32 − top thickness. In leg coordinates, seen from the leg's **i
 toward the middle of the table), v runs from the foot (0) to the top (L) and u runs across the width
 from the outer edge (0).
 
-- **Outline:** the outer edge is straight. The inner edge is u = w(v), with w = 3.25 for v ≥ L − 3
-  (the apron zone) and w = 1.75 + 1.5 · (v / (L − 3))³ below it. The flare meets the straight top
+- **Outline:** the outer edge is straight. The inner edge is u = w(v), with w = 3.25 for v ≥ L − h
+  (the apron zone, h the apron height) and w = 1.5 + 1.75 · (v / (L − h))³ below it. The flare meets the straight top
   at the aprons' bottom edge.
 - **Housing** for the side apron: u from 0.375 to 0.375 + plywood thickness + clearance, v from
-  L − 3 to L (open at the top), 0.75 deep. A dogbone at each bottom corner.
-- **Lap** for the long apron: u from 1.5 to 3.25 (open at the inner edge), v from L − 3 to L (open
+  L − h to L (open at the top), 0.75 deep. A dogbone at each bottom corner.
+- **Lap** for the long apron: u from 1.5 to 3.25 (open at the inner edge), v from L − h to L (open
   at the top), as deep as the plywood is thick. A dogbone at its bottom-outer corner.
 - **Dogbones:** a circle of the bit's radius whose edge passes through the corner, centered on the
   corner's bisector, so a ¼" bit leaves the corner square enough for the plywood's square corners.
@@ -145,7 +145,8 @@ from the outer edge (0).
 
 ### Aprons and coupon (`aprons.py`)
 
-All plywood parts are 3.0 tall and as thick as the plywood.
+The aprons are the apron height tall: drawn 3.0 for job 1, they came out 2.971. Every plywood part
+is as thick as the plywood.
 
 - **Long aprons (front, back):** length W − 2 × (1.0 + 3.25 − 1.75). Nominal 26.75.
 - **Side aprons (left, right):** they span between the legs' inside faces and run 0.75 into each
@@ -163,10 +164,10 @@ All plywood parts are 3.0 tall and as thick as the plywood.
 This module places every part in table coordinates.
 
 - **Legs:** outer faces 1.0 in from each end. With t the leg thickness, front legs from y = 3.5 to
-  3.5 + t, and back legs from y = D − 3.0 − t to D − 3.0. Each leg's inside face faces the middle
+  3.5 + t, and back legs from y = D − 3.332 − t to D − 3.332. Each leg's inside face faces the middle
   of the table.
 - **Long aprons:** set into the laps, flush with the legs' inside faces. Front apron from
-  y = 3.5 + t − plywood thickness to 3.5 + t; back apron from y = D − 3.0 − t to that + plywood
+  y = 3.5 + t − plywood thickness to 3.5 + t; back apron from y = D − 3.332 − t to that + plywood
   thickness.
 - **Side aprons:** outer face 1.375 in from each end of the top.
 - **Heights:** apron tops flush with the leg tops, and both against the underside of the top.
@@ -175,9 +176,9 @@ This module places every part in table coordinates.
 
 | Sheet | Stock | Face up | Layout |
 |---|---|---|---|
-| Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon (1.75 tall) goes in the 1.875" strip left over. |
+| Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three strips as tall as the aprons, with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon (1.75 tall) goes in the strip left over. |
 | Job 2: fit test | An LVL offcut, at least 6 × 4 | — | One housing pocket and one lap pocket, as cut in the legs, each long enough for the coupon's 1.75" side. |
-| Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. About 0.3" of the measured 11.75" width is spare. |
+| Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart, centered across the board's width too, so the cutter leaves 0.148 of wood along each long edge for the clamps. |
 | Job 4: top | Cherry glue-up | The top's show face, front (curved) edge toward the operator | The outline 0.125 inside the glue-up on every side. The shallow end is at the left. |
 
 ## Rules (`rules.py`, enforced by the build)
@@ -198,7 +199,7 @@ assembled. The build writes nothing if it isn't empty.
    outline.
 5. **It won't tip.** The deepest point of the front edge is at most 3.5 past the front legs. The
    empty table also needs at least 50 lb pressing down there to tip forward. That figure uses each
-   part's volume and the densities cherry 35, LVL 38 and plywood 43 lb/ft³. Nominal: about 64 lb.
+   part's volume and the densities cherry 35, LVL 38 and plywood 43 lb/ft³. Nominal: about 59 lb.
 6. **The shank never rubs.** The clearance pass is at least (full depth − flute length) + 0.1 deep,
    the first finishing stage stops at flute length − 0.1 so the flutes finish the top of the edge,
    and the collet nut clears the top of the LVL by at least 0.15 at full depth. Full depth is the
@@ -213,6 +214,8 @@ assembled. The build writes nothing if it isn't empty.
    measured thickness, and the apron's hole takes the rest of the dowel plus 1/16 for glue. At least
    ⅜ of each dowel must go into the top, and each apron hole leaves at least 0.15 of plywood on
    either side.
+11. **The clamps have wood to hold.** The widest cut on the LVL, the clearance pass, leaves at least
+   0.125 of wood along each of its long edges.
 
 ## Files and layers (`export.py`, `build.py`)
 
@@ -251,8 +254,10 @@ Starting settings; tune by sound and chip.
 | 3 | ¼" two-flute, 2" stickout, ½" in the collet | 12–14,000 RPM, 40 IPM, 10 IPM plunge (ramp), 0.05" per pass. Vacuum and air throughout. The cuts go in this order: pockets, clearance, rough, finish. About 5 hours. |
 | 4 | ¼" three-flute | As job 1, with a full-depth finishing pass on the outline |
 
-- **Hold-down:** painter's tape and CA glue under the LVL and the top, so neither needs tabs; their
-  cuts go 0.02" into the spoilboard. The plywood is held by its tabs.
+- **Hold-down:** painter's tape and CA glue under the LVL and the top; their cuts go 0.02" into
+  the spoilboard. The plywood is held by its tabs, and the legs by two rows of tabs across the
+  LVL, 8.5" and 24" from its left end, set in `legs.c2d`, where the LVL is clamped at its front
+  and back edges.
 - **Zero:** X and Y at the lower-left corner of the stock, Z at the top of the stock.
 - **Job 3 grip:** draw a marker line on the shank at the collet nut, and check it between the cut
   steps. Watch the first full-depth pass for collet-nut clearance.
@@ -276,7 +281,7 @@ Starting settings; tune by sound and chip.
    Keep finish out of the dowel holes and off the 2" of apron edge between them.
 7. **Attach the top.** Lay it upside down. Put dowel centers in the four apron holes, set the base
    upside down on the top in its place (legs' outer faces 1" in from each end, back legs' back faces
-   3" from the back edge), and press to mark the top. Drill the four marks 5/16" × ½" deep (as printed by the build), with a
+   3⅓" from the back edge), and press to mark the top. Drill the four marks 5/16" × ½" deep (as printed by the build), with a
    stop collar so it can't go through. Glue the dowels in, with glue only in the holes and on the 2"
    of apron edge between them; glue anywhere else would lock the top. Fit eight Z-clips (one per
    groove on the long aprons, two per side apron; buy a pack of ten) with ⅝" screws.
@@ -303,8 +308,8 @@ Starting settings; tune by sound and chip.
 - **Collet grip:** ½" of a ¼" shank in the collet is less than the usual ¾". An upcut bit can pull
   out under load. The mitigations are the marker line, a clean and properly tightened collet, and
   light passes.
-- **Collet-nut clearance** is about 0.19" at full depth with the 1.786" LVL, so the LVL must lie flat,
-  the tape be thin, and the stickout be a full 2". Check it with the spindle off before the first
+- **Collet-nut clearance** is about 0.36" at full depth with the LVL faced to 1.62" (0.19" before
+  facing), so the LVL must lie flat, the tape be thin, and the stickout be a full 2". Check it with the spindle off before the first
   full-depth pass.
 - **Seasonal movement:** the top still moves ⅛–¼" across its width, half each way from the dowels.
   Let the boards sit in the loft for a week or two before the glue-up, keep glue off the apron edges
@@ -330,3 +335,17 @@ Starting settings; tune by sound and chip.
   the clearance pass inside the gap between legs; and the clip groove's setback wording is fixed.
 - **2026-10-13 (machining):** the fit test is cut in an LVL offcut with the two-flute bit at the
   leg feeds, so it predicts the leg pockets exactly; the plywood offcut from job 1 is the test piece.
+- **2026-10-14 (fit test):** the first fit test was a little loose in both pockets: the aprons came
+  out 0.706 thick and 2.971 tall, not 0.723 and 3.0. The plywood's thickness and the apron height
+  now hold those as-cut values, so the housings are 0.711 wide, the laps 0.706 deep, and both
+  2.971 tall, keeping the apron tops flush with the leg tops. The fit test is not re-cut.
+- **2026-10-14 (leg tabs and clamps):** the legs get tabs after all, at the user's request: two rows
+  across the LVL at x = 8.5 and 24, one tab on each long edge of each leg, so the legs and the
+  slivers between each head-to-toe pair stay joined to each other and to the LVL's front and back
+  edges, where the user clamps. To keep the cutter off the clamps, the feet narrow from 1.75 to
+  1.5 and the legs sit centered across the LVL, and rule 11 keeps 0.125 of wood beyond the
+  cutter along both long edges. The aprons and joints are unchanged; the tipping figure is 62 lb.
+- **2026-10-14 (faced LVL):** the user faced the LVL to 1.62 with a fly cutter, so full depth is
+  1.64, the clearance pass 0.34, and the collet nut clears the board by 0.36, more room over the
+  clamps. The back legs move forward to 3.332 from the wall, keeping the legs' inside faces 13.678
+  apart for the side aprons as cut; the front legs stay put. The tipping figure is 59 lb.

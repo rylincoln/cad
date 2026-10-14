@@ -16,17 +16,17 @@ def test_the_legs_stand_an_inch_in_from_each_end_with_the_flare_toward_the_middl
         assert (lo[0], hi[0]) == pytest.approx((1.0, 4.25) if name.endswith("left") else (27.5, 30.75))
         foot = [part.to_table(a, b)[0] for a, b in part.outline.exterior.coords if b == 0.0]
         assert min(abs(x - outer) for x in foot) == pytest.approx(0.0)
-        assert max(abs(x - outer) for x in foot) == pytest.approx(1.75)
+        assert max(abs(x - outer) for x in foot) == pytest.approx(1.5)
 
 
-def test_the_front_legs_stand_3_5_behind_the_front_edge_and_the_back_legs_3_from_the_wall(table):
+def test_the_front_legs_stand_3_5_behind_the_front_edge_and_the_back_legs_3_332_from_the_wall(table):
     placed = _placed(table)
     for name in ("front-left", "front-right"):
         lo, hi = extent(placed[name])
-        assert (lo[1], hi[1]) == pytest.approx((3.5, 5.286))
+        assert (lo[1], hi[1]) == pytest.approx((3.5, 5.12))
     for name in ("back-left", "back-right"):
         lo, hi = extent(placed[name])
-        assert (lo[1], hi[1]) == pytest.approx((18.964, 20.75))
+        assert (lo[1], hi[1]) == pytest.approx((18.798, 20.418))
 
 
 def test_every_inside_face_faces_the_middle_of_the_table(table):
@@ -46,7 +46,7 @@ def test_the_aprons_are_flush_with_the_leg_tops_under_the_top(table):
     placed = _placed(table)
     for name in ("front apron", "back apron", "left apron", "right apron"):
         lo, hi = extent(placed[name])
-        assert (lo[2], hi[2]) == pytest.approx((28.25, 31.25))
+        assert (lo[2], hi[2]) == pytest.approx((28.279, 31.25))
     lo, hi = extent(placed["top"])
     assert (lo[2], hi[2]) == pytest.approx((31.25, 32.0))
 
@@ -65,15 +65,15 @@ def test_to_face_undoes_to_table(table):
 def test_the_dowels_sit_at_the_middle_of_the_long_aprons_where_they_meet_the_top(table):
     spots = sorted(dowel_spots(table))
     assert [x for x, _, _ in spots] == pytest.approx([14.875, 14.875, 16.875, 16.875])
-    assert sorted({round(y, 4) for _, y, _ in spots}) == pytest.approx([front_inside_y() - 0.3615, back_inside_y() + 0.3615])
+    assert sorted({round(y, 4) for _, y, _ in spots}) == pytest.approx([front_inside_y() - 0.353, back_inside_y() + 0.353])
     assert all(z == pytest.approx(31.25) for _, _, z in spots)
 
 
-def test_the_empty_table_weighs_about_26_lb_centered_about_12_in_back(table):
+def test_the_empty_table_weighs_about_24_lb_centered_about_12_in_back(table):
     weight, center_y = weight_and_center_y(table)
-    assert weight == pytest.approx(26.0, abs=0.5)
-    assert center_y == pytest.approx(12.16, abs=0.1)
+    assert weight == pytest.approx(24.1, abs=0.5)
+    assert center_y == pytest.approx(12.08, abs=0.1)
 
 
-def test_it_takes_about_64_lb_on_the_front_edge_to_tip_it(table):
-    assert tip_load(table) == pytest.approx(64.4, abs=1.0)
+def test_it_takes_about_59_lb_on_the_front_edge_to_tip_it(table):
+    assert tip_load(table) == pytest.approx(59.0, abs=1.0)
