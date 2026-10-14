@@ -23,7 +23,7 @@ build plan is in `docs/plans/`.
 | File | Job | Stock, as it sits on the machine |
 |---|---|---|
 | `out/aprons.dxf` / `.svg` | 1 | Plywood, 32 × 11⅞ × 0.723", the worse face up |
-| `out/fit_test.dxf` / `.svg` | 2 | Any scrap at least 1" thick, about 6 × 4" |
+| `out/fit_test.dxf` / `.svg` | 2 | An offcut of the LVL, at least 6 × 4" |
 | `out/legs.dxf` / `.svg` | 3 | LVL, 32½ × 11¾ × 1.786", the worse face up |
 | `out/top.dxf` / `.svg` | 4 | The cherry glue-up, show face up, curved edge toward you |
 | `out/table.step` / `.glb` | – | The assembled table in 3D. Open the GLB in the CAD Viewer. |
@@ -53,14 +53,16 @@ These are starting settings; tune them by sound and chip.
 
 | Job | Bit | Settings |
 |---|---|---|
-| 1 aprons, 2 fit test | ¼" three-flute, 1" flute | 16,000 RPM, 50 IPM, 15 IPM plunge (ramp), 0.1" per pass. Tabs on the plywood parts. |
+| 1 aprons | ¼" three-flute, 1" flute | 16,000 RPM, 50 IPM, 15 IPM plunge (ramp), 0.1" per pass. Tabs on the plywood parts. |
+| 2 fit test | ¼" two-flute, set up as for job 3 | As job 3: the same bit, feeds and material as the leg pockets, so the test predicts them. |
 | 3 legs | ¼" two-flute, 1.4" flute: ½" in the collet, 2" out | 12–14,000 RPM, 40 IPM, 10 IPM plunge (ramp), 0.05" per pass. Vacuum and air throughout. About 5 hours. |
 | 4 top | ¼" three-flute | As job 1, with a full-depth finishing pass on the outline |
 
 - **Hold-down:** painter's tape and CA glue under the LVL and the top, so neither needs tabs. Their
   cuts go 0.02" into the spoilboard. The plywood is held by its tabs.
-- **Job 2 before job 3:** the coupon from job 1 should slide into the test housing snug by hand, and
-  sit flush in the test lap. If it is tight or loose in the housing, change `FIT_CLEARANCE` in
+- **Job 2 between jobs 1 and 3:** cut the aprons first, then the fit test, then the legs. Test with
+  the coupon from job 1, or any offcut of the same plywood: only its thickness matters. It should
+  slide into the test housing snug by hand, and sit flush in the test lap. If it is tight or loose in the housing, change `FIT_CLEARANCE` in
   `table/spec.py`. If it sits proud or low in the lap, check Z zero, re-measure the plywood and set
   `PLY_THICKNESS`. Either way, rebuild and test again before you cut the LVL.
 - **Job 3, in this order:** the pockets; the clearance pass; the rough pass; the outline to 1.3";

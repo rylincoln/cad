@@ -176,7 +176,7 @@ This module places every part in table coordinates.
 | Sheet | Stock | Face up | Layout |
 |---|---|---|---|
 | Job 1: aprons | Plywood | The plywood's worse face: the aprons' inside faces | Three 3" strips with 0.25 between parts and 0.125 from the edges: back long apron, front long apron, then both side aprons end to end. The coupon (1.75 tall) goes in the 1.875" strip left over. |
-| Job 2: fit test | Any scrap ≥ 1" thick, about 6 × 4 | — | One housing pocket and one lap pocket, as cut in the legs, each long enough for the coupon's 1.75" side. |
+| Job 2: fit test | An LVL offcut, at least 6 × 4 | — | One housing pocket and one lap pocket, as cut in the legs, each long enough for the coupon's 1.75" side. |
 | Job 3: legs | LVL | The legs' inside faces, so the LVL's better face goes down and shows on the front legs' fronts | Two head-to-toe pairs along the board's length, centered. One pair is the front-left and back-right legs, the other is front-right and back-left. Parts at least 0.4 apart; outer edges 0.125 from the board edges. About 0.3" of the measured 11.75" width is spare. |
 | Job 4: top | Cherry glue-up | The top's show face, front (curved) edge toward the operator | The outline 0.125 inside the glue-up on every side. The shallow end is at the left. |
 
@@ -246,9 +246,10 @@ Starting settings; tune by sound and chip.
 
 | Job | Bit | Settings |
 |---|---|---|
-| 1, 2 | ¼" three-flute, 1" flute | 16,000 RPM, 50 IPM, 15 IPM plunge (ramp), 0.1" per pass. Tabs on the plywood parts. |
+| 1 | ¼" three-flute, 1" flute | 16,000 RPM, 50 IPM, 15 IPM plunge (ramp), 0.1" per pass. Tabs on the plywood parts. |
+| 2 | ¼" two-flute, as job 3 | As job 3, so the test pockets come out as the leg pockets will |
 | 3 | ¼" two-flute, 2" stickout, ½" in the collet | 12–14,000 RPM, 40 IPM, 10 IPM plunge (ramp), 0.05" per pass. Vacuum and air throughout. The cuts go in this order: pockets, clearance, rough, finish. About 5 hours. |
-| 4 | ¼" three-flute | As jobs 1 and 2, with a full-depth finishing pass on the outline |
+| 4 | ¼" three-flute | As job 1, with a full-depth finishing pass on the outline |
 
 - **Hold-down:** painter's tape and CA glue under the LVL and the top, so neither needs tabs; their
   cuts go 0.02" into the spoilboard. The plywood is held by its tabs.
@@ -327,3 +328,5 @@ Starting settings; tune by sound and chip.
 - **2026-10-13 (final review):** the build prints every Carbide Create depth and the dowel positions;
   the README's fit-test remedy separates the housing's clearance from the lap's depth; a rule keeps
   the clearance pass inside the gap between legs; and the clip groove's setback wording is fixed.
+- **2026-10-13 (machining):** the fit test is cut in an LVL offcut with the two-flute bit at the
+  leg feeds, so it predicts the leg pockets exactly; the plywood offcut from job 1 is the test piece.
